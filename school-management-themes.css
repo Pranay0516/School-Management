@@ -1,0 +1,107 @@
+/*
+  School Management UI themes
+  Apply one class to <body>:
+  <body class="theme-1">  or  <body class="theme-2">
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+:root {
+  --font-body: 'Nunito Sans', sans-serif;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Theme 1 — Liquid Glass: modern admin / teacher dashboard */
+.theme-1 {
+  --page-bg: #eaf3ff;
+  --page-bg-2: #f5efff;
+  --surface: rgba(255, 255, 255, .52);
+  --surface-strong: rgba(255, 255, 255, .78);
+  --border: rgba(255, 255, 255, .72);
+  --text: #17233f;
+  --muted: #64748b;
+  --primary: #3667f5;
+  --primary-2: #8058ed;
+  --success: #18a76c;
+  --warning: #ec9b2d;
+  --danger: #ea596d;
+  --shadow: 0 18px 45px rgba(62, 79, 140, .14);
+  background:
+    radial-gradient(circle at 12% 13%, rgba(72, 196, 255, .45), transparent 27rem),
+    radial-gradient(circle at 88% 18%, rgba(164, 111, 255, .32), transparent 25rem),
+    radial-gradient(circle at 55% 90%, rgba(74, 225, 177, .26), transparent 24rem),
+    linear-gradient(135deg, var(--page-bg), var(--page-bg-2));
+}
+
+.theme-1 .app-shell { min-height: 100vh; padding: 24px; }
+.theme-1 .glass-card,
+.theme-1 .sidebar,
+.theme-1 .topbar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+}
+.theme-1 .sidebar { padding: 18px; }
+.theme-1 .topbar { padding: 14px 20px; }
+.theme-1 .glass-card { padding: 22px; }
+.theme-1 .primary-btn {
+  color: #fff; border: 0; border-radius: 14px; padding: 12px 18px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  box-shadow: 0 10px 22px rgba(74, 92, 232, .28);
+}
+.theme-1 .primary-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+
+/* Theme 2 — Friendly Clay: student / parent dashboard */
+.theme-2 {
+  --page-bg: #f8f4eb;
+  --page-bg-2: #e8f5f0;
+  --surface: #eef5f1;
+  --surface-strong: #f8fcfa;
+  --border: rgba(255, 255, 255, .72);
+  --text: #263b43;
+  --muted: #6b7f82;
+  --primary: #ef7c62;
+  --primary-2: #f4aa54;
+  --success: #55aa83;
+  --warning: #e9ae40;
+  --danger: #db6370;
+  --shadow: 12px 12px 25px rgba(154, 174, 165, .30), -10px -10px 22px rgba(255, 255, 255, .84);
+  background: linear-gradient(135deg, var(--page-bg), var(--page-bg-2));
+}
+
+.theme-2 .app-shell { min-height: 100vh; padding: 24px; }
+.theme-2 .glass-card,
+.theme-2 .sidebar,
+.theme-2 .topbar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius: 28px;
+}
+.theme-2 .sidebar { padding: 18px; }
+.theme-2 .topbar { padding: 14px 20px; }
+.theme-2 .glass-card { padding: 22px; }
+.theme-2 .primary-btn {
+  color: #fff; border: 0; border-radius: 18px; padding: 12px 18px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  box-shadow: 5px 7px 14px rgba(218, 117, 93, .28);
+}
+.theme-2 .primary-btn:hover { transform: translateY(-2px) scale(1.01); }
+
+/* Shared elements */
+.theme-1, .theme-2 { color: var(--text); font-family: var(--font-body); }
+.theme-1 h1, .theme-1 h2, .theme-1 h3, .theme-2 h1, .theme-2 h2, .theme-2 h3 {
+  font-family: var(--font-display); margin-top: 0;
+}
+.theme-1 .primary-btn, .theme-2 .primary-btn { cursor: pointer; font: 700 14px var(--font-body); transition: .2s ease; }
+.theme-1 .input-field, .theme-2 .input-field {
+  width: 100%; box-sizing: border-box; padding: 13px 14px; color: var(--text);
+  background: var(--surface-strong); border: 1px solid var(--border); border-radius: 14px; outline: none;
+}
+.theme-1 .input-field:focus, .theme-2 .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 16%, transparent); }
+.stat-card { min-width: 180px; }
+.stat-card .label { color: var(--muted); font-weight: 700; font-size: .85rem; }
+.stat-card .value { font: 800 2rem var(--font-display); margin: 7px 0 0; }

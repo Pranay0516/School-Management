@@ -1,0 +1,29 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-management',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <article class="glass-card panel-page">
+      <div class="panel-title"><div><p class="eyebrow">MANAGEMENT HELP</p><h2>School support resources</h2></div></div>
+      <p class="muted">Access documentation and quick links for administration, fee management, attendance, and academic workflows.</p>
+      <div class="help-cards">
+        <article>
+          <h3>Administration</h3>
+          <p>Review role permissions, menu access, and dashboard settings for admins.</p>
+        </article>
+        <article>
+          <h3>Attendance & Exams</h3>
+          <p>Learn how to record attendance, manage exam papers, and approve scorecards.</p>
+        </article>
+        <article>
+          <h3>Student records</h3>
+          <p>Find guidance on student profiles, fee tracking, and class assignments.</p>
+        </article>
+      </div>
+    </article>
+  `
+})
+export class ManagementComponent {}

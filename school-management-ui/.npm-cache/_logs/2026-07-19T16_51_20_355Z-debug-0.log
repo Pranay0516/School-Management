@@ -1,0 +1,31 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.6.2
+2 info using node@v24.12.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\PRANAY TEJA\OneDrive\Documents\School Management\school-management-ui\.npmrc
+5 silly config load:file:C:\Users\PRANAY TEJA\.npmrc
+6 silly config load:file:C:\Users\PRANAY TEJA\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install
+8 verbose argv "install" "--cache" ".npm-cache" "--no-audit" "--no-fund"
+9 verbose logfile logs-max:10 dir:C:\Users\PRANAY TEJA\OneDrive\Documents\School Management\school-management-ui\.npm-cache\_logs\2026-07-19T16_51_20_355Z-
+10 verbose logfile C:\Users\PRANAY TEJA\OneDrive\Documents\School Management\school-management-ui\.npm-cache\_logs\2026-07-19T16_51_20_355Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:8640266240 maxSize:2160066560 maxEntrySize:1080033280
+13 silly idealTree buildDeps
+14 silly fetch manifest @emnapi/core@^1.7.1
+15 silly packumentCache full:https://registry.npmjs.org/@emnapi%2fcore cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/@emnapi%2fcore 424ms (cache revalidated)
+17 silly packumentCache full:https://registry.npmjs.org/@emnapi%2fcore set size:119205 disposed:false
+18 silly fetch manifest @emnapi/runtime@^1.7.1
+19 silly packumentCache full:https://registry.npmjs.org/@emnapi%2fruntime cache-miss
+20 http fetch GET 200 https://registry.npmjs.org/@emnapi%2fruntime 39ms (cache revalidated)
+21 silly packumentCache full:https://registry.npmjs.org/@emnapi%2fruntime set size:120481 disposed:false
+22 silly placeDep ROOT @emnapi/core@1.11.2 OK for: @napi-rs/wasm-runtime@1.1.6 want: ^1.7.1
+23 silly placeDep ROOT @emnapi/runtime@1.11.2 OK for: @napi-rs/wasm-runtime@1.1.6 want: ^1.7.1
+24 silly reify moves {}
+25 verbose cwd C:\Users\PRANAY TEJA\OneDrive\Documents\School Management\school-management-ui
+26 verbose os Windows_NT 10.0.26200
+27 verbose node v24.12.0
+28 verbose npm  v11.6.2
+29 verbose exit 0
+30 info ok

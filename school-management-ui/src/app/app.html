@@ -1,0 +1,312 @@
+﻿<!-- ═══════════════════════════════════════════════════════════════════════════
+     LOGIN PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+@if (!loggedIn()) {
+  <div class="login-root theme-1">
+
+    <!-- Left panel — branding -->
+    <aside class="login-left">
+      <div class="ll-inner">
+        <!-- Logo -->
+        <div class="ll-logo">
+          <div class="logo-mark">◆</div>
+          <div class="logo-text">
+            <span class="logo-edu">EDU</span><span class="logo-flow">FLOW</span>
+            <small>School Management ERP</small>
+          </div>
+        </div>
+
+        <!-- Hero copy -->
+        <div class="ll-hero">
+          <p class="ll-version">v3.7 · Multi-School Platform</p>
+          <h1>One platform.<br>Every school.<br><em>Every role.</em></h1>
+          <p class="ll-desc">Manage admissions, attendance, examinations, fees and more — all from a single, beautifully designed workspace.</p>
+        </div>
+
+        <!-- Feature chips -->
+        <div class="ll-chips">
+          <span class="ll-chip">Students & Admissions</span>
+          <span class="ll-chip">Attendance</span>
+          <span class="ll-chip">Examinations</span>
+          <span class="ll-chip">Fee Collection</span>
+          <span class="ll-chip">Staff Management</span>
+          <span class="ll-chip">Parent Portal</span>
+          <span class="ll-chip">Reports & Analytics</span>
+        </div>
+
+        <!-- Stats row -->
+        <div class="ll-stats">
+          <div class="ll-stat"><b>500+</b><small>Schools</small></div>
+          <div class="ll-stat"><b>2L+</b><small>Students</small></div>
+          <div class="ll-stat"><b>99.9%</b><small>Uptime</small></div>
+        </div>
+      </div>
+      <!-- Decorative blobs -->
+      <div class="blob blob-a"></div>
+      <div class="blob blob-b"></div>
+    </aside>
+
+    <!-- Right panel — login form -->
+    <main class="login-right">
+      <div class="lr-card">
+
+        <!-- Card header -->
+        <div class="lr-head">
+          <div class="lr-logo-sm">◆</div>
+          <div>
+            <h2>Welcome back</h2>
+            <p class="lr-sub">Sign in to your EduFlow account</p>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <form class="lr-form" (ngSubmit)="signIn()" novalidate>
+
+          <!-- Email / Admission ID -->
+          <div class="lf-group">
+            <label class="lf-label">Email or Admission ID</label>
+            <div class="lf-input-wrap">
+              <span class="lf-icon">✉</span>
+              <input
+                class="lf-input"
+                type="text"
+                name="username"
+                [(ngModel)]="login.username"
+                autocomplete="username"
+                placeholder="Enter email or admission ID" />
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="lf-group">
+            <div class="lf-label-row">
+              <label class="lf-label">Master Password</label>
+              <a class="lf-forgot" href="#" (click)="$event.preventDefault()">Forgot Password?</a>
+            </div>
+            <div class="lf-input-wrap">
+              <span class="lf-icon">🔒</span>
+              <input
+                class="lf-input"
+                [type]="showPassword() ? 'text' : 'password'"
+                name="password"
+                [(ngModel)]="login.password"
+                autocomplete="current-password"
+                placeholder="Enter your password" />
+              <button type="button" class="lf-eye" (click)="showPassword.set(!showPassword())" [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
+                {{ showPassword() ? '🙈' : '👁' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Keep signed in -->
+          <label class="lf-keep">
+            <input type="checkbox" [(ngModel)]="keepSignedIn" name="keep" />
+            <span>Keep me signed in</span>
+          </label>
+
+          @if (loginError()) {
+            <p class="lf-error" role="alert">{{ loginError() }}</p>
+          }
+
+          <!-- Sign in button -->
+          <button class="lf-signin-btn" type="submit">
+            Sign In to Dashboard
+            <span class="lf-arrow">→</span>
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="lr-divider"><span>OR</span></div>
+
+        <!-- Quick Demo Login -->
+        <div class="lr-demo">
+          <p class="lr-demo-title">Quick Demo Login</p>
+          <p class="lr-demo-sub">Pick a role. No signup, opens instantly.</p>
+
+          <div class="demo-cards-grid">
+            <!-- Platform Owner -->
+            <button class="demo-card" (click)="quickLogin('SUPER_ADMIN')">
+              <div class="dc-icon">🏛</div>
+              <div class="dc-info">
+                <b>Platform Owner</b>
+                <small>All schools, billing, servers</small>
+              </div>
+              <span class="dc-arrow">→</span>
+            </button>
+
+            <!-- School Admin (featured) -->
+            <button class="demo-card featured" (click)="quickLogin('ADMIN')">
+              <div class="dc-badge">MOST EXPLORED</div>
+              <div class="dc-icon">🏫</div>
+              <div class="dc-info">
+                <b>School Admin</b>
+                <small>One school, end to end</small>
+              </div>
+              <span class="dc-arrow">→</span>
+            </button>
+          </div>
+
+          <!-- Branch Admin -->
+          <button class="demo-row" (click)="quickLogin('ADMIN')">
+            <div class="dr-icon">🏢</div>
+            <div class="dr-info">
+              <b>Branch Admin</b>
+              <span class="dr-muted">— head office, many schools</span>
+            </div>
+            <span class="dr-chevron">›</span>
+          </button>
+
+          <!-- Also included -->
+          <p class="lr-also">ALSO INCLUDED</p>
+          <div class="also-row">
+            <button class="also-btn" (click)="quickLogin('TEACHER')">🎓 Teacher</button>
+            <button class="also-btn" (click)="quickLogin('ADMIN')">💻 Accountant</button>
+            <button class="also-btn" (click)="quickLogin('PARENT')">👨‍👧 Student / Parent</button>
+          </div>
+        </div>
+
+        <!-- Create account -->
+        <p class="lr-create">
+          New to Multi School ERP v3.7?
+          <a href="#" class="lr-create-link" (click)="$event.preventDefault()">Create your school account</a>
+        </p>
+      </div>
+    </main>
+  </div>
+}
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     APP SHELL — MODULE SELECTOR
+════════════════════════════════════════════════════════════════════════════ -->
+@else {
+  @if (activeModule() === 'selector') {
+    <div [class]="theme()">
+      <header class="selector-topbar">
+        <div class="brand">
+          <span class="brand-icon">◆</span>
+          <div>EDU<span>FLOW</span></div>
+        </div>
+        <div class="selector-topbar-right">
+          <button class="icon-action" (click)="toggleTheme()" title="Toggle theme">◐</button>
+          <div class="avatar-wrap" (click)="profileOpen.set(!profileOpen())">
+            <div class="avatar" role="button" tabindex="0">{{ initials() }}</div>
+            @if (profileOpen()) {
+              <div class="profile-drop glass-card" role="menu">
+                <div class="profile-drop-head">
+                  <div class="avatar sm">{{ initials() }}</div>
+                  <div>
+                    <b>{{ login.username || 'User' }}</b>
+                    <small>{{ role() | titlecase }}</small>
+                  </div>
+                </div>
+                <hr />
+                <button role="menuitem" (click)="signOut()">Sign out</button>
+              </div>
+            }
+          </div>
+        </div>
+      </header>
+      <div (click)="profileOpen.set(false)">
+        <app-module-selector [role]="role()" (select)="enterModule($event)" />
+      </div>
+    </div>
+  }
+
+  <!-- ── Super Admin ──────────────────────────────────────────────────────── -->
+  @if (activeModule() === 'super-admin') {
+    <div [class]="theme()">
+      <app-super-admin-shell [username]="login.username" (back)="backToSelector()" />
+    </div>
+  }
+
+  <!-- ── School Portal ───────────────────────────────────────────────────── -->
+  @if (activeModule() === 'school-portal') {
+    <main class="app-shell" [class]="theme()">
+      <aside class="sidebar" [class.collapsed]="sidebarCollapsed()">
+        <div class="brand">
+          <span class="brand-icon">◆</span>
+          @if (!sidebarCollapsed()) {
+            <div>EDU<span>FLOW</span><small>School Management</small></div>
+          }
+        </div>
+        <nav aria-label="Main navigation">
+          @for (menu of visibleMenus; track menu.title) {
+            <button class="nav-item" [class.active]="page() === menu.title"
+              [attr.aria-current]="page() === menu.title ? 'page' : null"
+              [title]="menu.title" (click)="page.set(menu.title)">
+              <i class="nav-icon" aria-hidden="true">{{ menu.icon }}</i>
+              @if (!sidebarCollapsed()) { <span>{{ menu.title }}</span> }
+            </button>
+          }
+        </nav>
+        <div class="sidebar-bottom">
+          @if (!sidebarCollapsed()) {
+            <label class="field-label-sm">View as role</label>
+            <select [ngModel]="role()" (ngModelChange)="changeRole($event)" aria-label="Switch role">
+              @for (r of allRoles; track r) { <option>{{ r }}</option> }
+            </select>
+          }
+          <button class="collapse-btn" (click)="sidebarCollapsed.set(!sidebarCollapsed())">
+            {{ sidebarCollapsed() ? '>>' : '<<' }}
+          </button>
+          <button class="collapse-btn" style="margin-top:6px" (click)="backToSelector()">
+            @if (!sidebarCollapsed()) { Back } @else { Back }
+          </button>
+        </div>
+      </aside>
+      <div class="main-wrap">
+        <header class="topbar">
+          <div class="topbar-left">
+            <p class="topbar-meta">Academic Year 2026-27</p>
+            <h1 class="topbar-title">{{ page() }}</h1>
+          </div>
+          <div class="topbar-right">
+            <button class="icon-action" (click)="toggleTheme()" title="Toggle theme">◐</button>
+            <div class="avatar-wrap" (click)="profileOpen.set(!profileOpen())">
+              <div class="avatar">{{ initials() }}</div>
+              @if (profileOpen()) {
+                <div class="profile-drop glass-card" role="menu">
+                  <div class="profile-drop-head">
+                    <div class="avatar sm">{{ initials() }}</div>
+                    <div>
+                      <b>{{ login.username || 'Admin User' }}</b>
+                      <small>{{ role() | titlecase }}</small>
+                    </div>
+                  </div>
+                  <hr />
+                  <button role="menuitem" (click)="signOut()">Sign out</button>
+                </div>
+              }
+            </div>
+          </div>
+        </header>
+        <section class="content" (click)="profileOpen.set(false)">
+          @if (page() === 'Dashboard' && role() === 'ADMIN')   { <app-admin-dashboard /> }
+          @if (page() === 'Dashboard' && role() === 'TEACHER') { <app-teacher-dashboard /> }
+          @if (page() === 'Dashboard' && (role() === 'STUDENT' || role() === 'PARENT')) { <app-student-dashboard /> }
+          @if (page() === 'Students')        { <app-student-list /> }
+          @if (page() === 'Teachers')        { <app-teacher-list /> }
+          @if (page() === 'Attendance')      { <app-attendance /> }
+          @if (page() === 'Examinations')    { <app-examinations /> }
+          @if (page() === 'Exam Papers')     { <app-exam-papers [role]="role()" /> }
+          @if (page() === 'Fees')            { <app-fees /> }
+          @if (page() === 'Menu Management') { <app-menu-management /> }
+        </section>
+      </div>
+    </main>
+  }
+
+  <!-- ── Parent & Student ────────────────────────────────────────────────── -->
+  @if (activeModule() === 'parent-student') {
+    <div [class]="theme()">
+      <app-parent-student-shell [username]="login.username" (back)="backToSelector()" />
+    </div>
+  }
+
+  <!-- ── Staff App ───────────────────────────────────────────────────────── -->
+  @if (activeModule() === 'staff') {
+    <div [class]="theme()">
+      <app-staff-shell [username]="login.username" (back)="backToSelector()" />
+    </div>
+  }
+}

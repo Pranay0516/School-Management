@@ -1,0 +1,41 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.6.2
+2 info using node@v24.12.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\PRANAY TEJA\OneDrive\Documents\School Management\school-management-ui\.npmrc
+5 silly config load:file:C:\Users\PRANAY TEJA\.npmrc
+6 silly config load:file:C:\Users\PRANAY TEJA\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install rxjs@~7.8.0
+8 verbose argv "install" "rxjs@~7.8.0" "--save" "--cache" ".npm-cache" "--no-audit" "--no-fund" "--loglevel" "verbose"
+9 verbose logfile logs-max:10 dir:C:\Users\PRANAY TEJA\OneDrive\Documents\School Management\school-management-ui\.npm-cache\_logs\2026-07-19T16_37_00_360Z-
+10 verbose logfile C:\Users\PRANAY TEJA\OneDrive\Documents\School Management\school-management-ui\.npm-cache\_logs\2026-07-19T16_37_00_360Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:8640266240 maxSize:2160066560 maxEntrySize:1080033280
+13 silly idealTree buildDeps
+14 silly fetch manifest rxjs@~7.8.0
+15 silly packumentCache full:https://registry.npmjs.org/rxjs cache-miss
+16 verbose shrinkwrap failed to load node_modules/.package-lock.json out of date, updated: node_modules/rxjs
+17 http cache https://registry.npmjs.org/rxjs 377ms (cache hit)
+18 silly packumentCache full:https://registry.npmjs.org/rxjs set size:980097 disposed:false
+19 silly placeDep ROOT rxjs@7.8.2 REPLACE for: school-management-ui@0.0.0 want: ~7.8.0
+20 silly reify mark retired [
+20 silly reify   'C:\\Users\\PRANAY TEJA\\OneDrive\\Documents\\School Management\\school-management-ui\\node_modules\\@angular\\common'
+20 silly reify ]
+21 silly reify moves {
+21 silly reify   'C:\\Users\\PRANAY TEJA\\OneDrive\\Documents\\School Management\\school-management-ui\\node_modules\\@angular\\common': 'C:\\Users\\PRANAY TEJA\\OneDrive\\Documents\\School Management\\school-management-ui\\node_modules\\@angular\\.common-u61e2Mlj'
+21 silly reify }
+22 verbose stack Error: ENOTEMPTY: directory not empty, rmdir 'C:\Users\PRANAY TEJA\OneDrive\Documents\School Management\school-management-ui\node_modules\@angular\common\locales\extra'
+23 error code ENOTEMPTY
+24 error syscall rmdir
+25 error path C:\Users\PRANAY TEJA\OneDrive\Documents\School Management\school-management-ui\node_modules\@angular\common\locales\extra
+26 error errno -4051
+27 error ENOTEMPTY: directory not empty, rmdir 'C:\Users\PRANAY TEJA\OneDrive\Documents\School Management\school-management-ui\node_modules\@angular\common\locales\extra'
+28 silly unfinished npm timer reify 1784479025903
+29 silly unfinished npm timer reify:retireShallow 1784479028432
+30 verbose cwd C:\Users\PRANAY TEJA\OneDrive\Documents\School Management\school-management-ui
+31 verbose os Windows_NT 10.0.26200
+32 verbose node v24.12.0
+33 verbose npm  v11.6.2
+34 verbose exit -4051
+35 verbose code -4051
+36 error A complete log of this run can be found in: C:\Users\PRANAY TEJA\OneDrive\Documents\School Management\school-management-ui\.npm-cache\_logs\2026-07-19T16_37_00_360Z-debug-0.log

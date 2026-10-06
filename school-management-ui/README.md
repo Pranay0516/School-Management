@@ -36,6 +36,23 @@ ng build
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
+## UAT and production environments
+
+Angular environment files are selected by the build configuration:
+
+```bash
+npm run build:uat
+npm run build:prod
+```
+
+Use `npm run start:uat` to serve the UAT configuration locally; its dev-server proxy sends
+`/api` requests to `http://localhost:8080`. Development builds keep using the API at
+`http://<current-host>:8080/api`. UAT and production bundles use the relative `/api` URL,
+so configure the deployed web server or reverse proxy to route `/api` to the Java API.
+This keeps deployment hostnames out of the client bundle. If the API is hosted on a
+different origin, update that environment file's `apiBaseUrl` and configure the API's
+allowed CORS origins accordingly.
+
 ## Running unit tests
 
 To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:

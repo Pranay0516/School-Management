@@ -1,4 +1,4 @@
-`package com.eduflow.dashboard;
+package com.eduflow.dashboard;
 
 import com.eduflow.attendance.Attendance;
 import com.eduflow.attendance.AttendanceRepository;
@@ -256,7 +256,11 @@ public class AdminDashboardService {
 
         Map<AdmissionEnquiry.Status, Long> admissionsByStatus = allAdmissions.stream()
                 .collect(Collectors.groupingBy(enquiry -> enquiry.status, Collectors.counting()));
-        int attendancePercent = enrolledStudents == 0 ? 0
+        int attendancePercent = enrolledStudents == 0 ? 0        $env:APP_BOOTSTRAP_SUPER_ADMIN_USERNAME = "platform@example.com"
+        $env:APP_BOOTSTRAP_SUPER_ADMIN_PASSWORD = "Choose-a-strong-password"
+        
+        cd "C:\Users\PRANAY TEJA\OneDrive\Documents\School Management\school-management-api"
+        mvn spring-boot:run
                 : (int) Math.round(presentStudents * 100.0 / enrolledStudents);
 
         return new AdminDashboardResponse(

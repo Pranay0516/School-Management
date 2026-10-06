@@ -58,6 +58,12 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
@@ -72,6 +78,29 @@
               ],
               "outputHashing": "all"
             },
+            "uat": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.uat.ts"
+                }
+              ],
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "15kB",
+                  "maximumError": "16kB"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -85,6 +114,10 @@
           "configurations": {
             "production": {
               "buildTarget": "school-management-ui:build:production"
+            },
+            "uat": {
+              "buildTarget": "school-management-ui:build:uat",
+              "proxyConfig": "proxy.conf.json"
             },
             "development": {
               "buildTarget": "school-management-ui:build:development"

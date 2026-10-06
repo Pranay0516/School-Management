@@ -35,6 +35,26 @@ default. Configure a production schema migration process and use
 `SPRING_JPA_HIBERNATE_DDL_AUTO=validate` in production; automatic `update` is retained for the
 existing development workflow.
 
+## UAT and production profiles
+
+Activate the Spring profile with `SPRING_PROFILES_ACTIVE=uat` or
+`SPRING_PROFILES_ACTIVE=prod`. Both profiles require external database connection values,
+the bootstrap super-admin username/password, and a stable `APP_JWT_SECRET`; keep credentials
+in the deployment platform's secret store, not in source control. `APP_CORS_ALLOWED_ORIGINS`
+can be set to a comma-separated list when the Angular app is hosted on a different origin.
+The profiles use `ddl-auto: validate` and disable Open Session in View; apply a complete
+schema migration before starting them. The checked-in tenancy DDL is not yet a complete
+baseline for every application table, so do not point these profiles at an unmigrated database.
+
+Example profile activation in PowerShell:
+
+```powershell
+$env:SPRING_PROFILES_ACTIVE = "uat"
+# Set SPRING_DATASOURCE_URL, SPRING_DATASOURCE_USERNAME,
+# SPRING_DATASOURCE_PASSWORD, APP_JWT_SECRET, and bootstrap credentials securely.
+mvn spring-boot:run
+```
+
 ## Roles and tenant APIs
 
 | Role | Scope |

@@ -21,14 +21,14 @@ import { StaffShellComponent }               from './modules/staff/staff-shell.c
 interface NavMenu { title: string; icon: string; roles: string[]; }
 
 const ALL_MENUS: NavMenu[] = [
-  { title: 'Dashboard',       icon: 'Home',   roles: ['ADMIN','TEACHER','STUDENT','PARENT'] },
-  { title: 'Students',        icon: 'People', roles: ['ADMIN','TEACHER'] },
-  { title: 'Teachers',        icon: 'Staff',  roles: ['ADMIN'] },
-  { title: 'Attendance',      icon: 'Check',  roles: ['ADMIN','TEACHER','STUDENT','PARENT'] },
-  { title: 'Examinations',    icon: 'Exam',   roles: ['ADMIN','TEACHER','STUDENT','PARENT'] },
-  { title: 'Exam Papers',     icon: 'Paper',  roles: ['ADMIN','TEACHER'] },
-  { title: 'Fees',            icon: 'Fees',   roles: ['ADMIN','STUDENT','PARENT'] },
-  { title: 'Menu Management', icon: 'Config', roles: ['ADMIN'] },
+  { title: 'Dashboard',       icon: 'dashboard', roles: ['ADMIN','TEACHER','STUDENT','PARENT'] },
+  { title: 'Students',        icon: 'students',  roles: ['ADMIN','TEACHER'] },
+  { title: 'Teachers',        icon: 'teachers',  roles: ['ADMIN'] },
+  { title: 'Attendance',      icon: 'attendance',roles: ['ADMIN','TEACHER','STUDENT','PARENT'] },
+  { title: 'Examinations',    icon: 'exams',     roles: ['ADMIN','TEACHER','STUDENT','PARENT'] },
+  { title: 'Question Papers', icon: 'papers',    roles: ['ADMIN','TEACHER'] },
+  { title: 'Fees',            icon: 'fees',      roles: ['ADMIN','STUDENT','PARENT'] },
+  { title: 'Menu Management', icon: 'settings',  roles: ['ADMIN'] },
 ];
 
 @Component({

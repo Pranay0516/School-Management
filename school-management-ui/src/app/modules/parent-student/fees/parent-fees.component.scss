@@ -1,0 +1,36 @@
+
+    .pf-fees { display: flex; flex-direction: column; gap: 12px; }
+    .fees-header { padding: 20px; }
+    .fees-header h2 { margin: 0 0 4px; }
+    .fees-header p  { margin: 0; font-size: 13px; }
+
+    .fee-cards { display: flex; flex-direction: column; gap: 10px; }
+    .fee-card {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; gap: 12px; flex-wrap: wrap;
+    }
+    .fee-card-left { display: flex; align-items: center; gap: 14px; }
+    .fee-type-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: color-mix(in srgb, var(--primary) 12%, var(--surface-strong));
+      color: var(--primary); font-size: 20px; font-weight: 800;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .fee-card-left b { display: block; font-size: 14px; }
+    .fee-card-left small { color: var(--muted); font-size: 12px; }
+
+    .fee-card-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .fee-amount { font-size: 16px; font-weight: 800; }
+
+    .pay-btn {
+      border: 0; border-radius: 10px; padding: 8px 16px;
+      background: var(--primary); color: #fff;
+      font: 800 12px var(--font-body); cursor: pointer;
+      transition: opacity .15s;
+    }
+    .pay-btn:hover { opacity: .85; }
+
+    .loading-msg { text-align: center; padding: 32px; color: var(--muted); }
+    .error-msg   { color: #c53d55; font-size: 13px; }
+    .success-msg { color: var(--success); font-size: 13px; font-weight: 700; }
+  

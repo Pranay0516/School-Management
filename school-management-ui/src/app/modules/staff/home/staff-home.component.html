@@ -1,0 +1,73 @@
+
+    <div class="sh-home">
+      <div class="welcome-banner glass-card">
+        <div class="welcome-avatar">{{ nameInitials() }}</div>
+        <div class="welcome-info">
+          <p class="eyebrow">GOOD MORNING</p>
+          <h2>{{ teacherName() }}</h2>
+          <p class="sub">{{ subject() }} Teacher · Class X-A Homeroom</p>
+        </div>
+        <div class="next-class-badge">
+          <p class="nc-label">NEXT CLASS</p>
+          <p class="nc-time">10:30 AM</p>
+          <p class="nc-detail">Mathematics · X-B · Rm 204</p>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        @for (s of stats; track s.label) {
+          <div class="stat-card glass-card">
+            <div class="stat-icon">{{ s.icon }}</div>
+            <div>
+              <b class="stat-value">{{ s.value }}</b>
+              <p class="stat-label">{{ s.label }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="content-grid">
+        <div class="glass-card schedule-card">
+          <h3>Today's Schedule</h3>
+          <div class="schedule-list">
+            @for (c of todayClasses; track c.time; let last = $last) {
+              <div class="schedule-row" [class.current]="c.current">
+                <div class="sch-time-col"><span class="sch-time">{{ c.time }}</span></div>
+                <div class="sch-dot-col">
+                  <div class="sch-dot" [class.active]="c.current"></div>
+                  @if (!last) { <div class="sch-line"></div> }
+                </div>
+                <div class="sch-info">
+                  <b>{{ c.subject }}</b>
+                  <small>{{ c.class }} · {{ c.room }}</small>
+                  @if (c.current) { <span class="now-badge">ONGOING</span> }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+        <div class="right-col">
+          <div class="glass-card tasks-card">
+            <h3>Pending Tasks</h3>
+            @for (t of pendingTasks; track t.title) {
+              <div class="task-row">
+                <span class="task-icon">{{ t.icon }}</span>
+                <div><b>{{ t.title }}</b><small>{{ t.due }}</small></div>
+                <span class="task-tag" [style.background]="t.tagBg" [style.color]="t.tagColor">{{ t.tag }}</span>
+              </div>
+            }
+          </div>
+          <div class="glass-card classes-card">
+            <h3>Classes Today</h3>
+            @for (c of todayClasses; track c.time) {
+              <div class="class-chip">
+                <b>{{ c.subject }}</b>
+                <span>{{ c.class }}</span>
+                <small>{{ c.time }}</small>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  

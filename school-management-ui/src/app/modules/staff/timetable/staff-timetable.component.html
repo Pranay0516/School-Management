@@ -1,0 +1,25 @@
+
+    <div class="stt-timetable">
+      <div class="tt-header glass-card">
+        <div><h2>My Weekly Timetable</h2><p class="muted">Mrs. Priya Sharma · Mathematics · 2025-26</p></div>
+        <div class="tt-stats">
+          <div class="tt-stat"><b>20</b><small>Classes/Week</small></div>
+          <div class="tt-stat"><b>4</b><small>Per Day</small></div>
+          <div class="tt-stat"><b>5</b><small>Free Periods</small></div>
+        </div>
+      </div>
+      <div class="tt-grid glass-card">
+        <div class="tt-time-col"></div>
+        @for (day of days; track day) { <div class="tt-day-head">{{ day }}</div> }
+        @for (slot of timeSlots; track slot; let si = $index) {
+          <div class="tt-time-label">{{ slot }}</div>
+          @for (day of days; track day; let di = $index) {
+            <div class="tt-cell" [class.class-cell]="!!getClass(di,si)" [class.free-cell]="!getClass(di,si)">
+              @if (getClass(di,si)) { <b>{{ getClass(di,si)!.cls }}</b><small>{{ getClass(di,si)!.room }}</small> }
+              @else { <span class="free-lbl">Free</span> }
+            </div>
+          }
+        }
+      </div>
+    </div>
+  

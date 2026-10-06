@@ -1,0 +1,10 @@
+
+    .panel { padding: 24px; margin-top: 8px; }
+    .row-actions { display: flex; gap: 6px; }
+    .icon-btn {
+      border: 1px solid var(--border); background: var(--surface-strong);
+      border-radius: 8px; padding: 5px 8px; font-size: 13px; cursor: pointer;
+      color: var(--muted); transition: all .15s;
+    }
+    .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+  

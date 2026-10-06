@@ -1,0 +1,40 @@
+
+    <div class="pf-fees">
+      <div class="fees-header glass-card">
+        <h2>My Fees</h2>
+        <p class="muted">Student ID: 1 · Academic Year 2025–26</p>
+      </div>
+
+      <div class="fee-cards">
+        @for (f of fees(); track f.id) {
+          <div class="fee-card glass-card">
+            <div class="fee-card-left">
+              <div class="fee-type-icon">₹</div>
+              <div>
+                <b>{{ f.feeType }}</b>
+                <small>Due: {{ f.dueDate }}</small>
+              </div>
+            </div>
+            <div class="fee-card-right">
+              <span class="fee-amount">₹ {{ f.amount | number }}</span>
+              <ef-badge [variant]="statusVariant(f.paymentStatus)">{{ f.paymentStatus }}</ef-badge>
+              @if (f.paymentStatus === 'PENDING' || f.paymentStatus === 'OVERDUE') {
+                <button class="pay-btn" (click)="pay(f)">Pay now</button>
+              }
+            </div>
+          </div>
+        }
+        @if (!fees().length && !loading()) {
+          <div class="glass-card">
+            <ef-empty icon="₹" message="No fee records found." />
+          </div>
+        }
+        @if (loading()) {
+          <div class="loading-msg">Loading fees…</div>
+        }
+      </div>
+
+      @if (error()) { <p class="error-msg">{{ error() }}</p> }
+      @if (successMsg()) { <p class="success-msg">{{ successMsg() }}</p> }
+    </div>
+  

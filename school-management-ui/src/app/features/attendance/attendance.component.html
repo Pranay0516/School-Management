@@ -1,0 +1,63 @@
+
+    <article class="glass-card panel">
+      <ef-page-header
+        eyebrow="DAILY RECORD"
+        title="Attendance"
+        actionLabel="Save attendance"
+        (action)="save()" />
+
+      <!-- toolbar -->
+      <div class="att-toolbar">
+        <div class="toolbar-left">
+          <div class="field-group">
+            <label class="field-label">Date</label>
+            <input type="date" [(ngModel)]="selectedDate" (change)="load()" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Class</label>
+            <select [(ngModel)]="selectedClass" (change)="load()">
+              @for (c of classes; track c) { <option>{{ c }}</option> }
+            </select>
+          </div>
+        </div>
+        <div class="att-summary">
+          <span class="pill present">✓ {{ presentCount() }} Present</span>
+          <span class="pill absent">✗ {{ absentCount() }} Absent</span>
+          <span class="pill late">⏱ {{ lateCount() }} Late</span>
+        </div>
+      </div>
+
+      <!-- list -->
+      <div class="att-list">
+        @for (r of records(); track r.id ?? r.studentId) {
+          <div class="att-row">
+            <div class="student-info">
+              <b>Student #{{ r.studentId }}</b>
+              <small>{{ r.className }}</small>
+            </div>
+            <div class="status-toggle">
+              @for (st of statuses; track st) {
+                <button
+                  class="toggle-btn"
+                  [class.active]="r.status === st"
+                  [class]="'toggle-btn ' + st.toLowerCase() + (r.status === st ? ' active' : '')"
+                  (click)="setStatus(r, st)">
+                  {{ st }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+        @empty {
+          <div class="att-empty">
+            <span>📅</span>
+            <p>No records for this class and date. Load attendance to begin.</p>
+            <button class="primary-btn" (click)="loadSample()">Load sample records</button>
+          </div>
+        }
+      </div>
+
+      @if (saved()) { <p class="save-msg">✓ Attendance saved successfully.</p> }
+      @if (error()) { <p class="error-msg">{{ error() }}</p> }
+    </article>
+  

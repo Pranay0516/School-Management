@@ -1,0 +1,43 @@
+
+    <article class="glass-card panel">
+      <ef-page-header eyebrow="BILLING & SUBSCRIPTIONS" title="Subscriptions" />
+
+      <div class="sub-summary">
+        <div class="pill">
+          <span class="pill-label">Active</span>
+          <span class="pill-value">{{ activeCount() }}</span>
+        </div>
+        <div class="pill warn">
+          <span class="pill-label">Expiring Soon</span>
+          <span class="pill-value">{{ expiringSoon() }}</span>
+        </div>
+        <div class="pill danger">
+          <span class="pill-label">Expired</span>
+          <span class="pill-value">{{ expiredCount() }}</span>
+        </div>
+        <div class="pill success">
+          <span class="pill-label">Total Revenue</span>
+          <span class="pill-value">₹{{ totalRevenue() }}L</span>
+        </div>
+      </div>
+
+      <ef-data-table [columns]="cols" style="--dt-cols: 2fr 1fr 1fr 1fr 1fr 1fr 100px">
+        @for (s of subs(); track s.id) {
+          <div class="dt-row">
+            <b>{{ s.school }}</b>
+            <span>{{ s.plan }}</span>
+            <span>₹{{ s.amount.toLocaleString() }}/yr</span>
+            <span>{{ s.startDate }}</span>
+            <span>{{ s.endDate }}</span>
+            <ef-badge [variant]="statusVariant(s.status)">{{ s.status }}</ef-badge>
+            <div class="row-actions">
+              @if (s.status !== 'ACTIVE') {
+                <button class="icon-btn success" (click)="markPaid(s)">Renew</button>
+              }
+            </div>
+          </div>
+        }
+        @empty { <ef-empty icon="💳" message="No subscriptions found." /> }
+      </ef-data-table>
+    </article>
+  

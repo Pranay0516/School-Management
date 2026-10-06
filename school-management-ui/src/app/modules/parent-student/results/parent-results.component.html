@@ -1,0 +1,39 @@
+
+    <div class="pr-results">
+      <div class="results-header glass-card">
+        <h2>Exam Results</h2>
+        <p class="muted">Class X-A · Roll #24 · Aanya Mehta</p>
+      </div>
+
+      @for (exam of exams; track exam.name) {
+        <div class="exam-section glass-card">
+          <div class="exam-title">
+            <h3>{{ exam.name }}</h3>
+            <span class="exam-date">{{ exam.date }}</span>
+          </div>
+          <div class="results-table">
+            <div class="rt-head">
+              <span>Subject</span>
+              <span>Max</span>
+              <span>Scored</span>
+              <span>Grade</span>
+            </div>
+            @for (r of exam.results; track r.subject) {
+              <div class="rt-row">
+                <span>{{ r.subject }}</span>
+                <span>{{ r.maxMarks }}</span>
+                <span class="marks" [class.low]="r.marks / r.maxMarks < 0.4">{{ r.marks }}</span>
+                <ef-badge [variant]="gradeVariant(r.grade)">{{ r.grade }}</ef-badge>
+              </div>
+            }
+            <div class="rt-total">
+              <span>Total</span>
+              <span>{{ totalMax(exam.results) }}</span>
+              <span>{{ totalMarks(exam.results) }}</span>
+              <span class="pct">{{ percentage(exam.results) }}%</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  

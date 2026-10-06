@@ -1,0 +1,54 @@
+
+    .ph-home { display: flex; flex-direction: column; gap: 20px; }
+    .welcome-banner { display: flex; align-items: center; gap: 20px; padding: 24px 28px; flex-wrap: wrap; }
+    .welcome-avatar {
+      width: 60px; height: 60px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff; font: 800 22px var(--font-display); display: grid; place-items: center;
+    }
+    .welcome-info { flex: 1; }
+    .welcome-info h2 { font-size: 1.5rem; margin: 4px 0; }
+    .class-info { font-size: 14px; color: var(--muted); margin: 0; }
+    .content-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+    .col-left, .col-right { display: flex; flex-direction: column; gap: 20px; }
+    .info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .info-card { display: flex; align-items: flex-start; gap: 14px; padding: 20px; }
+    .info-icon { font-size: 22px; width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; flex-shrink: 0; }
+    .upcoming .info-icon { background: #e8eeff; }
+    .fee-card .info-icon { background: #fff5ec; }
+    .info-label { font-size: 10px; font-weight: 800; color: var(--muted); letter-spacing: .8px; margin: 0 0 4px; }
+    .info-card b { display: block; font-size: 15px; margin-bottom: 4px; }
+    .info-card small { color: var(--muted); font-size: 13px; }
+    .att-summary { padding: 24px; }
+    .att-summary h3 { margin: 0 0 18px; }
+    .att-pills { display: flex; gap: 12px; }
+    .att-pill { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 16px 10px; border-radius: 14px; }
+    .att-pill.present { background: #d4f5e6; }
+    .att-pill.absent  { background: #ffe5ea; }
+    .att-pill.late    { background: #fff1d7; }
+    .att-pill.pct     { background: #e8eeff; }
+    .pill-num { font-size: 26px; font-weight: 800; color: var(--text); }
+    .pill-lbl { font-size: 12px; font-weight: 700; color: var(--muted); }
+    .upcoming-exams { padding: 24px; }
+    .upcoming-exams h3 { margin: 0 0 16px; }
+    .exam-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .exam-table th { text-align: left; font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: .6px; text-transform: uppercase; padding: 0 0 10px; border-bottom: 1px solid var(--border); }
+    .exam-table td { padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .exam-table tr:last-child td { border-bottom: none; }
+    .exam-badge { background: #e8eeff; color: #2551c7; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 99px; }
+    .notices { padding: 24px; }
+    .notices h3 { margin: 0 0 14px; }
+    .notice-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .notice-row:last-child { border-bottom: none; }
+    .notice-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); margin-top: 5px; flex-shrink: 0; }
+    .notice-row b { display: block; font-size: 14px; }
+    .notice-row small { color: var(--muted); font-size: 12px; }
+    .fee-summary { padding: 24px; }
+    .fee-summary h3 { margin: 0 0 14px; }
+    .fee-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .fee-row:last-child { border-bottom: none; }
+    .fee-row b { display: block; font-size: 14px; }
+    .fee-row small { color: var(--muted); font-size: 12px; }
+    @media (max-width: 1100px) { .content-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 680px)  { .info-row { grid-template-columns: 1fr; } .att-pills { flex-wrap: wrap; } }
+  

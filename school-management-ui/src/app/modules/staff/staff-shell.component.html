@@ -1,0 +1,39 @@
+
+    <div class="staff-shell staff-theme">
+      <aside class="staff-sidebar" [class.collapsed]="collapsed()">
+        <div class="staff-brand">
+          <span class="brand-icon">👩‍🏫</span>
+          @if (!collapsed()) { <div class="brand-text"><b>Staff App</b><small>EduFlow</small></div> }
+        </div>
+        <nav>
+          @for (item of nav; track item.title) {
+            <button class="nav-item" [class.active]="page() === item.title" (click)="page.set(item.title)" [title]="item.title">
+              <i class="nav-icon">{{ navIcon(item.title) }}</i>
+              @if (!collapsed()) { <span>{{ item.title }}</span> }
+            </button>
+          }
+        </nav>
+        <div class="sidebar-bottom">
+          <button class="collapse-btn" (click)="collapsed.set(!collapsed())">{{ collapsed() ? '>>' : '<<' }}</button>
+          <button class="collapse-btn" (click)="back.emit()">@if (!collapsed()) { Back to Modules } @else { Back }</button>
+        </div>
+      </aside>
+      <div class="staff-main">
+        <header class="staff-topbar">
+          <div class="topbar-left">
+            <p class="topbar-meta">Staff Portal · EduFlow</p>
+            <h1 class="topbar-title">{{ page() }}</h1>
+          </div>
+          <div class="staff-avatar">{{ initials() }}</div>
+        </header>
+        <section class="staff-content">
+          @if (page() === 'Home')        { <app-staff-home [teacherName]="teacherName()" /> }
+          @if (page() === 'My Classes')  { <app-staff-classes (markAttendance)="goToAttendance($event)" /> }
+          @if (page() === 'Attendance')  { <app-staff-attendance [preloadClass]="attendanceClass()" /> }
+          @if (page() === 'Exam Papers') { <app-staff-exam-papers /> }
+          @if (page() === 'Timetable')   { <app-staff-timetable /> }
+          @if (page() === 'Leave')       { <app-staff-leave /> }
+        </section>
+      </div>
+    </div>
+  

@@ -1,0 +1,28 @@
+
+    <div class="sc-classes">
+      <div class="classes-banner glass-card">
+        <div><h2>My Classes</h2><p class="muted">4 classes assigned · 159 total students</p></div>
+        <div class="banner-stats">
+          <div class="bs-item"><b>159</b><small>Students</small></div>
+          <div class="bs-item"><b>4</b><small>Classes</small></div>
+          <div class="bs-item"><b>20</b><small>Periods/Week</small></div>
+        </div>
+      </div>
+      <div class="class-grid">
+        @for (c of classes; track c.name) {
+          <div class="class-card glass-card" [style.border-top-color]="c.color">
+            <div class="card-top">
+              <div class="class-badge" [style.background]="c.bg" [style.color]="c.color">{{ c.name }}</div>
+              <span class="student-count">{{ c.students }} students</span>
+            </div>
+            <h3>{{ c.subject }}</h3>
+            <div class="card-meta">
+              <span>Room: {{ c.room }}</span>
+              <span>{{ c.schedule }}</span>
+            </div>
+            <button class="mark-btn" [style.background]="c.color" (click)="markAttendance.emit(c.name)">Mark Attendance</button>
+          </div>
+        }
+      </div>
+    </div>
+  

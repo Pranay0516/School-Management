@@ -1,0 +1,52 @@
+
+    <div class="sa-shell super-admin-theme">
+      <!-- Sidebar -->
+      <aside class="sa-sidebar">
+        <div class="sa-brand">
+          <span class="brand-icon">🏛️</span>
+          <div>
+            <span>SUPER ADMIN</span>
+            <small>Platform Control</small>
+          </div>
+        </div>
+
+        <nav>
+          @for (item of nav; track item.title) {
+            <button
+              class="sa-nav-item"
+              [class.active]="page() === item.title"
+              (click)="page.set(item.title)">
+              <i class="nav-icon">{{ item.icon }}</i>
+              <span>{{ item.title }}</span>
+            </button>
+          }
+        </nav>
+
+        <div class="sa-sidebar-bottom">
+          <button class="back-btn" (click)="back.emit()">← All Modules</button>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="sa-main">
+        <header class="sa-topbar">
+          <div>
+            <p class="topbar-meta">EduFlow Platform</p>
+            <h1 class="topbar-title">{{ page() }}</h1>
+          </div>
+          <div class="topbar-right">
+            <div class="sa-avatar">{{ initials() }}</div>
+          </div>
+        </header>
+
+        <section class="sa-content">
+          @if (page() === 'Dashboard')     { <app-super-admin-dashboard /> }
+          @if (page() === 'Schools')       { <app-schools /> }
+          @if (page() === 'Subscriptions') { <app-subscriptions /> }
+          @if (page() === 'Global Users')  { <app-global-users /> }
+          @if (page() === 'Announcements') { <app-announcements /> }
+          @if (page() === 'Dashboard Access') { <app-dashboard-access /> }
+        </section>
+      </div>
+    </div>
+  

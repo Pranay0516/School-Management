@@ -1,0 +1,58 @@
+
+    <article class="glass-card panel">
+      <ef-page-header
+        eyebrow="COMMUNICATIONS"
+        title="Announcements"
+        actionLabel="+ New announcement"
+        (action)="openAdd()" />
+
+      <div class="ann-list">
+        @for (a of announcements(); track a.id) {
+          <div class="ann-card glass-card">
+            <div class="ann-head">
+              <div>
+                <h3>{{ a.title }}</h3>
+                <small>{{ a.date }}</small>
+              </div>
+              <ef-badge [variant]="audienceVariant(a.audience)">{{ audienceLabel(a.audience) }}</ef-badge>
+            </div>
+            <p>{{ a.message }}</p>
+          </div>
+        }
+        @empty {
+          <div class="empty-ann">
+            <span>📢</span>
+            <p>No announcements yet. Create one to broadcast to schools.</p>
+          </div>
+        }
+      </div>
+    </article>
+
+    @if (showModal()) {
+      <ef-modal eyebrow="NEW ANNOUNCEMENT" title="Create announcement" (close)="closeModal()">
+        <form (ngSubmit)="save()">
+          <div class="form-grid">
+            <ef-form-field label="Title" style="grid-column: 1/-1">
+              <input [(ngModel)]="draft.title" name="title" required />
+            </ef-form-field>
+            <ef-form-field label="Target Audience">
+              <select [(ngModel)]="draft.audience" name="audience">
+                <option value="ALL">All Schools</option>
+                <option value="PREMIUM">Premium Plan</option>
+                <option value="STANDARD">Standard Plan</option>
+                <option value="BASIC">Basic Plan</option>
+              </select>
+            </ef-form-field>
+            <ef-form-field label="Message" style="grid-column: 1/-1">
+              <textarea [(ngModel)]="draft.message" name="message" rows="4" required></textarea>
+            </ef-form-field>
+          </div>
+          @if (formError()) { <p class="error-msg">{{ formError() }}</p> }
+          <div class="form-actions">
+            <button type="button" class="outline-btn" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="primary-btn">Send announcement</button>
+          </div>
+        </form>
+      </ef-modal>
+    }
+  

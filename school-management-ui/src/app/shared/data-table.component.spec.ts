@@ -1,0 +1,18 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { DataTableComponent } from './data-table.component';
+
+describe('DataTableComponent', () => {
+  it('creates the component', async () => {
+    await TestBed.configureTestingModule({
+      imports: [DataTableComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(DataTableComponent);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance).toBeTruthy();
+  });
+});

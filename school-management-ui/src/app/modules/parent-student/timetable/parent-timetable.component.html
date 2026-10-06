@@ -1,0 +1,27 @@
+
+    <div class="pt-timetable">
+      <div class="tt-header glass-card">
+        <div><h2>Weekly Timetable</h2><p class="muted">Class X-A · Academic Year 2025-26</p></div>
+        <div class="tt-legend">
+          @for (s of subjects; track s.name) {
+            <span class="subj-chip" [style.background]="s.bg" [style.color]="s.color">{{ s.name }}</span>
+          }
+        </div>
+      </div>
+      <div class="tt-grid glass-card">
+        <div class="tt-time-col"></div>
+        @for (day of timetable; track day.day) { <div class="tt-day-head"><b>{{ day.day }}</b></div> }
+        @for (slot of timeSlots; track slot; let si = $index) {
+          <div class="tt-time-label">{{ slot }}</div>
+          @for (day of timetable; track day.day) {
+            <div class="tt-cell" [style.background]="cellBg(day.periods[si]?.subject)" [style.color]="cellColor(day.periods[si]?.subject)">
+              @if (day.periods[si]) {
+                <b>{{ day.periods[si].subject }}</b>
+                <small>{{ day.periods[si].teacher }}</small>
+              }
+            </div>
+          }
+        }
+      </div>
+    </div>
+  

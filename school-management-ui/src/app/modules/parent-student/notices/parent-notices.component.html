@@ -1,0 +1,28 @@
+
+    <div class="pn-notices">
+      <div class="notices-header glass-card">
+        <h2>School Notices</h2>
+        <p class="muted">Official announcements from the school administration.</p>
+      </div>
+
+      <div class="notice-list">
+        @for (n of notices(); track n.id) {
+          <div class="notice-card glass-card" [class.expanded]="expanded() === n.id">
+            <div class="notice-top" (click)="toggle(n.id)">
+              <div class="notice-meta">
+                <ef-badge [variant]="categoryVariant(n.category)">{{ n.category }}</ef-badge>
+                <span class="notice-date">{{ n.date }}</span>
+              </div>
+              <div class="notice-title-row">
+                <h3>{{ n.title }}</h3>
+                <span class="expand-icon">{{ expanded() === n.id ? '−' : '+' }}</span>
+              </div>
+            </div>
+            @if (expanded() === n.id) {
+              <p class="notice-content">{{ n.content }}</p>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  

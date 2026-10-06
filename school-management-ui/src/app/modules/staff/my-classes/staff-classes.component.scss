@@ -1,0 +1,20 @@
+
+    .sc-classes { display: flex; flex-direction: column; gap: 20px; }
+    .classes-banner { display: flex; align-items: center; justify-content: space-between; padding: 22px 26px; flex-wrap: wrap; gap: 16px; }
+    .classes-banner h2 { margin: 0 0 4px; }
+    .banner-stats { display: flex; gap: 24px; }
+    .bs-item { text-align: center; }
+    .bs-item b { display: block; font-size: 24px; font-weight: 800; color: var(--primary); }
+    .bs-item small { font-size: 11px; color: var(--muted); }
+    .class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .class-card { border-top-width: 4px; border-top-style: solid; padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+    .card-top { display: flex; align-items: center; justify-content: space-between; }
+    .class-badge { width: 52px; height: 52px; border-radius: 14px; font: 800 15px var(--font-display); display: grid; place-items: center; }
+    .student-count { font-size: 13px; color: var(--muted); font-weight: 600; }
+    .class-card h3 { margin: 0; font-size: 1.1rem; }
+    .card-meta { display: flex; flex-direction: column; gap: 5px; }
+    .card-meta span { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .mark-btn { padding: 10px; border: 0; border-radius: 10px; color: #fff; font: 700 13px var(--font-body); cursor: pointer; transition: opacity .15s; margin-top: 6px; }
+    .mark-btn:hover { opacity: .85; }
+    @media (max-width: 600px) { .class-grid { grid-template-columns: 1fr; } }
+  

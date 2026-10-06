@@ -1,0 +1,39 @@
+
+    <div class="ps-shell parent-theme">
+      <aside class="ps-sidebar" [class.collapsed]="collapsed()">
+        <div class="ps-brand">
+          <span class="brand-icon">👨‍👧</span>
+          @if (!collapsed()) { <div class="brand-text"><b>Parent &amp; Student</b><small>EduFlow</small></div> }
+        </div>
+        <nav>
+          @for (item of nav; track item.title) {
+            <button class="nav-item" [class.active]="page() === item.title" (click)="page.set(item.title)" [title]="item.title">
+              <i class="nav-icon">{{ navIcon(item.title) }}</i>
+              @if (!collapsed()) { <span>{{ item.title }}</span> }
+            </button>
+          }
+        </nav>
+        <div class="sidebar-bottom">
+          <button class="collapse-btn" (click)="collapsed.set(!collapsed())">{{ collapsed() ? '>>' : '<<' }}</button>
+          <button class="collapse-btn" (click)="back.emit()">@if (!collapsed()) { Back to Modules } @else { Back }</button>
+        </div>
+      </aside>
+      <div class="ps-main">
+        <header class="ps-topbar">
+          <div class="topbar-left">
+            <p class="topbar-meta">Parent &amp; Student Portal</p>
+            <h1 class="topbar-title">{{ page() }}</h1>
+          </div>
+          <div class="ps-avatar">{{ initials() }}</div>
+        </header>
+        <section class="ps-content">
+          @if (page() === 'Home')       { <app-parent-home [studentName]="studentName()" [studentClass]="studentClass()" /> }
+          @if (page() === 'Attendance') { <app-parent-attendance /> }
+          @if (page() === 'Timetable')  { <app-parent-timetable /> }
+          @if (page() === 'Results')    { <app-parent-results /> }
+          @if (page() === 'Fees')       { <app-parent-fees /> }
+          @if (page() === 'Notices')    { <app-parent-notices /> }
+        </section>
+      </div>
+    </div>
+  

@@ -1,0 +1,11 @@
+
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">{{ eyebrow() }}</p>
+        <h2>{{ title() }}</h2>
+      </div>
+      @if (actionLabel()) {
+        <button class="primary-btn" (click)="action.emit()">{{ actionLabel() }}</button>
+      }
+    </div>
+  

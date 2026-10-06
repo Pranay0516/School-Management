@@ -1,0 +1,12 @@
+
+    <div class="dt-wrap">
+      <div class="dt-head">
+        @for (col of columns(); track col) {
+          <span>{{ col }}</span>
+        }
+      </div>
+      <div class="dt-body">
+        <ng-content />
+      </div>
+    </div>
+  

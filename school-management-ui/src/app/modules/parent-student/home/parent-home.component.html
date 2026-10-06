@@ -1,0 +1,84 @@
+
+    <div class="ph-home">
+      <div class="welcome-banner glass-card">
+        <div class="welcome-avatar">{{ nameInitial() }}</div>
+        <div class="welcome-info">
+          <p class="eyebrow">GOOD MORNING</p>
+          <h2>{{ studentName() }}</h2>
+          <p class="class-info">Class {{ studentClass() }} · Roll #{{ rollNo() }}</p>
+        </div>
+        <ef-badge variant="success">Present Today</ef-badge>
+      </div>
+
+      <div class="content-grid">
+        <div class="col-left">
+          <div class="info-row">
+            <div class="info-card glass-card upcoming">
+              <div class="info-icon">📅</div>
+              <div>
+                <p class="info-label">NEXT EXAM</p>
+                <b>Mathematics – Unit Test</b>
+                <small>March 28, 2025 · 10:00 AM</small>
+              </div>
+            </div>
+            <div class="info-card glass-card fee-card">
+              <div class="info-icon">₹</div>
+              <div>
+                <p class="info-label">FEE DUE</p>
+                <b>Term II Fees</b>
+                <small>₹12,500 due Apr 5, 2025</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="att-summary glass-card">
+            <h3>This Month's Attendance</h3>
+            <div class="att-pills">
+              <div class="att-pill present"><span class="pill-num">18</span><span class="pill-lbl">Present</span></div>
+              <div class="att-pill absent"><span class="pill-num">2</span><span class="pill-lbl">Absent</span></div>
+              <div class="att-pill late"><span class="pill-num">1</span><span class="pill-lbl">Late</span></div>
+              <div class="att-pill pct"><span class="pill-num">86%</span><span class="pill-lbl">Rate</span></div>
+            </div>
+          </div>
+
+          <div class="upcoming-exams glass-card">
+            <h3>Upcoming Examinations</h3>
+            <table class="exam-table">
+              <thead><tr><th>Subject</th><th>Date</th><th>Time</th><th>Type</th></tr></thead>
+              <tbody>
+                @for (e of upcomingExams; track e.subject) {
+                  <tr>
+                    <td><b>{{ e.subject }}</b></td>
+                    <td>{{ e.date }}</td>
+                    <td>{{ e.time }}</td>
+                    <td><span class="exam-badge">{{ e.type }}</span></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="col-right">
+          <div class="notices glass-card">
+            <h3>Recent Notices</h3>
+            @for (n of notices; track n.id) {
+              <div class="notice-row">
+                <span class="notice-dot"></span>
+                <div><b>{{ n.title }}</b><small>{{ n.date }}</small></div>
+              </div>
+            }
+          </div>
+          <div class="fee-summary glass-card">
+            <h3>Fee Summary</h3>
+            @for (f of fees; track f.term) {
+              <div class="fee-row">
+                <div><b>{{ f.term }}</b><small>Due {{ f.due }}</small></div>
+                <ef-badge [variant]="f.paid ? 'success' : 'warning'">{{ f.paid ? 'Paid' : 'Pending' }}</ef-badge>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  

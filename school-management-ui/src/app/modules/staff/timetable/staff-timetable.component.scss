@@ -1,0 +1,20 @@
+
+    .stt-timetable { display: flex; flex-direction: column; gap: 16px; }
+    .tt-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; flex-wrap: wrap; gap: 16px; }
+    .tt-header h2 { margin: 0 0 4px; }
+    .tt-stats { display: flex; gap: 20px; }
+    .tt-stat { text-align: center; }
+    .tt-stat b { display: block; font-size: 22px; font-weight: 800; color: var(--primary); }
+    .tt-stat small { font-size: 11px; color: var(--muted); }
+    .tt-grid { display: grid; grid-template-columns: 90px repeat(5, 1fr); overflow: hidden; }
+    .tt-time-col, .tt-day-head { padding: 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); background: var(--surface-strong); border-bottom: 1px solid var(--border); text-align: center; }
+    .tt-day-head { color: var(--text); }
+    .tt-time-label { padding: 12px; font-size: 11px; font-weight: 700; color: var(--muted); background: var(--surface-strong); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); display: flex; align-items: center; }
+    .tt-cell { padding: 12px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 60px; display: flex; flex-direction: column; justify-content: center; gap: 3px; }
+    .class-cell { background: color-mix(in srgb, var(--primary) 10%, var(--surface)); color: var(--primary); }
+    .class-cell b { font-size: 14px; font-weight: 800; }
+    .class-cell small { font-size: 11px; opacity: .75; }
+    .free-cell { background: var(--surface-strong); }
+    .free-lbl { font-size: 12px; color: var(--muted); font-style: italic; }
+    @media (max-width: 900px) { .tt-grid { grid-template-columns: 70px repeat(5, 1fr); } .tt-cell { min-height: 46px; padding: 8px 6px; } .class-cell b { font-size: 11px; } .class-cell small { display: none; } }
+  

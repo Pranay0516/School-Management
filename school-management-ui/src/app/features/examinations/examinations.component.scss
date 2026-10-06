@@ -1,0 +1,28 @@
+
+    .panel { padding: 24px; margin-top: 8px; }
+    .exam-list { display: grid; gap: 10px; }
+    .exam-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: 14px;
+    }
+    .exam-dates { min-width: 130px; }
+    .date-range { font-size: 12px; font-weight: 700; color: var(--muted); }
+    .exam-info { flex: 1; }
+    .exam-info h3 { margin: 0; font-size: 15px; }
+    .exam-info p  { margin: 3px 0 0; font-size: 13px; color: var(--muted); }
+    .row-actions { display: flex; gap: 6px; }
+    .icon-btn {
+      border: 1px solid var(--border); background: var(--surface-strong);
+      border-radius: 8px; padding: 5px 8px; font-size: 13px; cursor: pointer;
+      color: var(--muted); transition: all .15s;
+    }
+    .icon-btn:hover        { border-color: var(--primary); color: var(--primary); }
+    .icon-btn.danger:hover { border-color: #c53d55; color: #c53d55; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 4px; }
+    .error-msg { color: #c53d55; font-size: 13px; margin-top: 8px; }
+    @media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } }
+  

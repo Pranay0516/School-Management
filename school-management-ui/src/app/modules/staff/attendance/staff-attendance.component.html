@@ -1,0 +1,61 @@
+
+    <div class="sa-attendance">
+      <div class="att-controls glass-card">
+        <h2>Mark Attendance</h2>
+        <div class="control-row">
+          <div class="field-group">
+            <label class="field-label">Date</label>
+            <input type="date" [(ngModel)]="selectedDate" (change)="load()" />
+          </div>
+          <div class="field-group">
+            <label class="field-label">Class</label>
+            <select [(ngModel)]="selectedClass" (change)="load()">
+              @for (c of classes; track c) { <option>{{ c }}</option> }
+            </select>
+          </div>
+        </div>
+        <div class="att-pills">
+          <span class="pill present">✓ {{ presentCount() }} Present</span>
+          <span class="pill absent">✗ {{ absentCount() }} Absent</span>
+          <span class="pill late">⏱ {{ lateCount() }} Late</span>
+        </div>
+      </div>
+
+      <div class="student-list">
+        @for (r of records(); track r.studentId) {
+          <div class="student-row glass-card">
+            <div class="student-info">
+              <b>Student #{{ r.studentId }}</b>
+              <small>{{ r.className }}</small>
+            </div>
+            <div class="status-toggle">
+              @for (st of statuses; track st) {
+                <button
+                  class="toggle-btn"
+                  [class]="'toggle-btn ' + st.toLowerCase() + (r.status === st ? ' active' : '')"
+                  (click)="setStatus(r, st)">
+                  {{ st }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+        @empty {
+          <div class="empty-att glass-card">
+            <span>📅</span>
+            <p>No records for this class. Load sample to begin.</p>
+            <button class="load-btn" (click)="loadSample()">Load sample records</button>
+          </div>
+        }
+      </div>
+
+      @if (records().length) {
+        <button class="save-btn" (click)="save()" [disabled]="saving()">
+          {{ saving() ? 'Saving…' : 'Save Attendance' }}
+        </button>
+      }
+
+      @if (saved())  { <p class="success-msg">✓ Attendance saved successfully.</p> }
+      @if (error())  { <p class="error-msg">{{ error() }}</p> }
+    </div>
+  

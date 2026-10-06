@@ -1,0 +1,34 @@
+
+    <section class="access-page">
+      <header class="page-heading">
+        <div>
+          <p class="eyebrow">SCHOOL PORTAL CONFIGURATION</p>
+          <h2>Dashboard card access</h2>
+          <p class="muted">Choose which dashboard cards are enabled for school administrators.</p>
+        </div>
+        <div class="bulk-actions">
+          <button type="button" (click)="access.setAll(true)">Enable all</button>
+          <button type="button" (click)="access.setAll(false)">Disable all</button>
+        </div>
+      </header>
+
+      <div class="access-list glass-card">
+        @for (widget of access.widgets(); track widget.id) {
+          <label class="access-row">
+            <span class="widget-icon" [class.off-icon]="!widget.enabled">{{ widget.enabled ? '▦' : '⊘' }}</span>
+            <span class="widget-copy">
+              <b>{{ widget.label }}</b>
+              <small>{{ widget.enabled ? 'Available on the school dashboard' : 'Shown as disabled on the school dashboard' }}</small>
+            </span>
+            <span class="state-label" [class.off-state]="!widget.enabled">{{ widget.enabled ? 'Enabled' : 'Disabled' }}</span>
+            <input
+              type="checkbox"
+              [checked]="widget.enabled"
+              [attr.aria-label]="'Enable ' + widget.label"
+              (change)="access.toggle(widget.id)" />
+          </label>
+        }
+      </div>
+      <p class="footnote">Settings are saved in this browser and apply immediately to the School Portal dashboard.</p>
+    </section>
+  

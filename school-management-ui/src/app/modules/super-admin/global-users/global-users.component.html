@@ -1,0 +1,25 @@
+
+    <article class="glass-card panel">
+      <ef-page-header eyebrow="PLATFORM USERS" title="Global Users" />
+
+      <ef-data-table [columns]="cols" style="--dt-cols: 2fr 2fr 1fr 2fr 1fr 80px">
+        @for (u of users(); track u.id) {
+          <div class="dt-row">
+            <div>
+              <b>{{ u.name }}</b>
+            </div>
+            <span>{{ u.email }}</span>
+            <ef-badge variant="info">{{ u.role }}</ef-badge>
+            <span>{{ u.school || '—' }}</span>
+            <ef-badge [variant]="u.status === 'ACTIVE' ? 'success' : 'danger'">{{ u.status }}</ef-badge>
+            <div class="row-actions">
+              <button class="icon-btn" (click)="toggleStatus(u)" [title]="u.status === 'ACTIVE' ? 'Suspend' : 'Activate'">
+                {{ u.status === 'ACTIVE' ? '⊘' : '✓' }}
+              </button>
+            </div>
+          </div>
+        }
+        @empty { <ef-empty icon="👤" message="No users found." /> }
+      </ef-data-table>
+    </article>
+  

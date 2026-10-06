@@ -13,63 +13,8 @@ interface Notice {
   selector: 'app-parent-notices',
   standalone: true,
   imports: [BadgeComponent],
-  template: `
-    <div class="pn-notices">
-      <div class="notices-header glass-card">
-        <h2>School Notices</h2>
-        <p class="muted">Official announcements from the school administration.</p>
-      </div>
-
-      <div class="notice-list">
-        @for (n of notices(); track n.id) {
-          <div class="notice-card glass-card" [class.expanded]="expanded() === n.id">
-            <div class="notice-top" (click)="toggle(n.id)">
-              <div class="notice-meta">
-                <ef-badge [variant]="categoryVariant(n.category)">{{ n.category }}</ef-badge>
-                <span class="notice-date">{{ n.date }}</span>
-              </div>
-              <div class="notice-title-row">
-                <h3>{{ n.title }}</h3>
-                <span class="expand-icon">{{ expanded() === n.id ? '−' : '+' }}</span>
-              </div>
-            </div>
-            @if (expanded() === n.id) {
-              <p class="notice-content">{{ n.content }}</p>
-            }
-          </div>
-        }
-      </div>
-    </div>
-  `,
-  styles: [`
-    .pn-notices { display: flex; flex-direction: column; gap: 12px; }
-    .notices-header { padding: 20px; }
-    .notices-header h2 { margin: 0 0 4px; }
-    .notices-header p  { margin: 0; font-size: 13px; }
-
-    .notice-list { display: flex; flex-direction: column; gap: 8px; }
-    .notice-card { padding: 16px 20px; cursor: pointer; transition: box-shadow .15s; }
-    .notice-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); }
-
-    .notice-top { }
-    .notice-meta {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
-    }
-    .notice-date { font-size: 12px; color: var(--muted); font-weight: 600; }
-    .notice-title-row {
-      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
-    }
-    .notice-title-row h3 { margin: 0; font-size: 14px; line-height: 1.4; }
-    .expand-icon {
-      font-size: 20px; font-weight: 300; color: var(--muted);
-      flex-shrink: 0; line-height: 1;
-    }
-
-    .notice-content {
-      margin: 12px 0 0; font-size: 14px; color: var(--muted);
-      line-height: 1.65; border-top: 1px solid var(--border); padding-top: 12px;
-    }
-  `],
+  templateUrl: './parent-notices.component.html',
+  styleUrl: './parent-notices.component.scss',
 })
 export class ParentNoticesComponent {
   expanded = signal<number | null>(null);

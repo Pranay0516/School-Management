@@ -5,48 +5,8 @@ type DaySchedule = { day: string; periods: Period[] };
 @Component({
   selector: 'app-parent-timetable',
   standalone: true,
-  template: `
-    <div class="pt-timetable">
-      <div class="tt-header glass-card">
-        <div><h2>Weekly Timetable</h2><p class="muted">Class X-A · Academic Year 2025-26</p></div>
-        <div class="tt-legend">
-          @for (s of subjects; track s.name) {
-            <span class="subj-chip" [style.background]="s.bg" [style.color]="s.color">{{ s.name }}</span>
-          }
-        </div>
-      </div>
-      <div class="tt-grid glass-card">
-        <div class="tt-time-col"></div>
-        @for (day of timetable; track day.day) { <div class="tt-day-head"><b>{{ day.day }}</b></div> }
-        @for (slot of timeSlots; track slot; let si = $index) {
-          <div class="tt-time-label">{{ slot }}</div>
-          @for (day of timetable; track day.day) {
-            <div class="tt-cell" [style.background]="cellBg(day.periods[si]?.subject)" [style.color]="cellColor(day.periods[si]?.subject)">
-              @if (day.periods[si]) {
-                <b>{{ day.periods[si].subject }}</b>
-                <small>{{ day.periods[si].teacher }}</small>
-              }
-            </div>
-          }
-        }
-      </div>
-    </div>
-  `,
-  styles: [`
-    .pt-timetable { display: flex; flex-direction: column; gap: 16px; }
-    .tt-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 20px 24px; flex-wrap: wrap; }
-    .tt-header h2 { margin: 0 0 4px; }
-    .tt-legend { display: flex; flex-wrap: wrap; gap: 8px; }
-    .subj-chip { padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 800; white-space: nowrap; }
-    .tt-grid { display: grid; grid-template-columns: 90px repeat(5, 1fr); overflow: hidden; }
-    .tt-time-col, .tt-day-head { padding: 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); background: var(--surface-strong); border-bottom: 1px solid var(--border); }
-    .tt-day-head { text-align: center; color: var(--text); }
-    .tt-time-label { padding: 12px; font-size: 11px; font-weight: 700; color: var(--muted); background: var(--surface-strong); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); display: flex; align-items: center; }
-    .tt-cell { padding: 12px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 60px; display: flex; flex-direction: column; justify-content: center; gap: 3px; }
-    .tt-cell b { font-size: 13px; font-weight: 700; }
-    .tt-cell small { font-size: 11px; opacity: .75; }
-    @media (max-width: 900px) { .tt-grid { grid-template-columns: 70px repeat(5, 1fr); } .tt-cell { min-height: 50px; padding: 8px 6px; } .tt-cell b { font-size: 11px; } .tt-cell small { display: none; } }
-  `],
+  templateUrl: './parent-timetable.component.html',
+  styleUrl: './parent-timetable.component.scss',
 })
 export class ParentTimetableComponent {
   timeSlots = ['8:00-8:45', '8:45-9:30', '9:45-10:30', '10:30-11:15', '11:30-12:15', '12:15-13:00'];

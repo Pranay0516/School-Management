@@ -17,41 +17,8 @@ interface GlobalUser {
   selector: 'app-global-users',
   standalone: true,
   imports: [BadgeComponent, DataTableComponent, EmptyStateComponent, PageHeaderComponent],
-  template: `
-    <article class="glass-card panel">
-      <ef-page-header eyebrow="PLATFORM USERS" title="Global Users" />
-
-      <ef-data-table [columns]="cols" style="--dt-cols: 2fr 2fr 1fr 2fr 1fr 80px">
-        @for (u of users(); track u.id) {
-          <div class="dt-row">
-            <div>
-              <b>{{ u.name }}</b>
-            </div>
-            <span>{{ u.email }}</span>
-            <ef-badge variant="info">{{ u.role }}</ef-badge>
-            <span>{{ u.school || '—' }}</span>
-            <ef-badge [variant]="u.status === 'ACTIVE' ? 'success' : 'danger'">{{ u.status }}</ef-badge>
-            <div class="row-actions">
-              <button class="icon-btn" (click)="toggleStatus(u)" [title]="u.status === 'ACTIVE' ? 'Suspend' : 'Activate'">
-                {{ u.status === 'ACTIVE' ? '⊘' : '✓' }}
-              </button>
-            </div>
-          </div>
-        }
-        @empty { <ef-empty icon="👤" message="No users found." /> }
-      </ef-data-table>
-    </article>
-  `,
-  styles: [`
-    .panel { padding: 24px; margin-top: 8px; }
-    .row-actions { display: flex; gap: 6px; }
-    .icon-btn {
-      border: 1px solid var(--border); background: var(--surface-strong);
-      border-radius: 8px; padding: 5px 8px; font-size: 13px; cursor: pointer;
-      color: var(--muted); transition: all .15s;
-    }
-    .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
-  `],
+  templateUrl: './global-users.component.html',
+  styleUrl: './global-users.component.scss',
 })
 export class GlobalUsersComponent {
   cols = ['Name', 'Email', 'Role', 'School', 'Status', ''];

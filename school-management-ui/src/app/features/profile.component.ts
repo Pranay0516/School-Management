@@ -6,33 +6,7 @@ import { RouterLink } from '@angular/router';
   selector: 'app-profile',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  template: `
-    <article class="glass-card profile-page">
-      <div class="panel-title"><div><p class="eyebrow">MY PROFILE</p><h2>Your account details</h2></div></div>
-      <div class="profile-grid">
-        <section>
-          <h3>Personal information</h3>
-          <p><b>Name:</b> Anita Teacher</p>
-          <p><b>Role:</b> Teacher</p>
-          <p><b>Email:</b> anita@greenfield.edu</p>
-          <p><b>Phone:</b> +91 98765 43210</p>
-        </section>
-        <section>
-          <h3>Account settings</h3>
-          <p><b>System access:</b> Teacher Dashboard</p>
-          <p><b>Last login:</b> 30 July 2026, 08:42 AM</p>
-          <p><b>Preferences:</b> Dark mode enabled</p>
-        </section>
-      </div>
-      <div class="profile-actions">
-        <button class="primary-btn">Edit profile</button>
-        <button class="outline-btn">Manage security</button>
-      </div>
-      <div class="profile-navigation">
-        <a routerLink="/teacher" class="primary-btn">← Back to dashboard</a>
-        <a routerLink="/students" class="outline-btn">Open students</a>
-      </div>
-    </article>
-  `
+  templateUrl: './profile.component.html',
+  styleUrl: './profile.component.scss',
 })
 export class ProfileComponent {}

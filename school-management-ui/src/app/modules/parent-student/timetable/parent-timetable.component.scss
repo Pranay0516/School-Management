@@ -1,0 +1,15 @@
+
+    .pt-timetable { display: flex; flex-direction: column; gap: 16px; }
+    .tt-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 20px 24px; flex-wrap: wrap; }
+    .tt-header h2 { margin: 0 0 4px; }
+    .tt-legend { display: flex; flex-wrap: wrap; gap: 8px; }
+    .subj-chip { padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .tt-grid { display: grid; grid-template-columns: 90px repeat(5, 1fr); overflow: hidden; }
+    .tt-time-col, .tt-day-head { padding: 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); background: var(--surface-strong); border-bottom: 1px solid var(--border); }
+    .tt-day-head { text-align: center; color: var(--text); }
+    .tt-time-label { padding: 12px; font-size: 11px; font-weight: 700; color: var(--muted); background: var(--surface-strong); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); display: flex; align-items: center; }
+    .tt-cell { padding: 12px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 60px; display: flex; flex-direction: column; justify-content: center; gap: 3px; }
+    .tt-cell b { font-size: 13px; font-weight: 700; }
+    .tt-cell small { font-size: 11px; opacity: .75; }
+    @media (max-width: 900px) { .tt-grid { grid-template-columns: 70px repeat(5, 1fr); } .tt-cell { min-height: 50px; padding: 8px 6px; } .tt-cell b { font-size: 11px; } .tt-cell small { display: none; } }
+  

@@ -1,0 +1,46 @@
+
+    <div class="pa-attendance">
+      <div class="cal-header glass-card">
+        <button class="nav-btn" (click)="prevMonth()">‹</button>
+        <h2>{{ monthLabel() }}</h2>
+        <button class="nav-btn" (click)="nextMonth()">›</button>
+      </div>
+
+      <div class="cal-card glass-card">
+        <div class="cal-dow-row">
+          @for (d of dows; track d) { <span class="dow">{{ d }}</span> }
+        </div>
+        <div class="cal-grid">
+          @for (d of calDays(); track d.date + '-' + d.status) {
+            <div
+              class="cal-cell"
+              [class]="'cal-cell ' + d.status.toLowerCase()"
+              [class.empty]="d.date === 0">
+              @if (d.date > 0) {
+                <span class="cal-date">{{ d.date }}</span>
+                @if (d.status !== 'FUTURE' && d.status !== 'HOLIDAY') {
+                  <span class="cal-dot"></span>
+                }
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="legend glass-card">
+        @for (l of legend; track l.label) {
+          <div class="leg-item">
+            <span class="leg-dot" [class]="l.class"></span>
+            {{ l.label }}
+          </div>
+        }
+      </div>
+
+      <div class="month-summary glass-card">
+        <div class="sum-item present"><b>{{ presentCount() }}</b><span>Present</span></div>
+        <div class="sum-item absent"><b>{{ absentCount() }}</b><span>Absent</span></div>
+        <div class="sum-item late"><b>{{ lateCount() }}</b><span>Late</span></div>
+        <div class="sum-item pct"><b>{{ attendancePct() }}%</b><span>Rate</span></div>
+      </div>
+    </div>
+  

@@ -1,0 +1,31 @@
+
+    .panel { padding: 24px; margin-top: 8px; }
+
+    .fee-summary {
+      display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+    }
+    .summary-pill {
+      display: flex; flex-direction: column; gap: 2px;
+      padding: 12px 18px; border-radius: 12px;
+      border: 1px solid var(--border); background: var(--surface-strong);
+      min-width: 90px;
+    }
+    .summary-pill.pending { background: #fff8ed; border-color: #ffd999; }
+    .summary-pill.paid    { background: #edfaf2; border-color: #a3e9c8; }
+    .pill-label { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: .5px; }
+    .pill-value { font-size: 22px; font-weight: 800; color: var(--text); }
+
+    .row-actions { display: flex; gap: 6px; }
+    .icon-btn {
+      border: 1px solid var(--border); background: var(--surface-strong);
+      border-radius: 8px; padding: 5px 9px; font-size: 12px; cursor: pointer;
+      color: var(--muted); font-weight: 700; transition: all .15s;
+    }
+    .icon-btn.success:hover { border-color: var(--success); color: var(--success); background: #edfaf2; }
+    .icon-btn.danger:hover  { border-color: var(--primary); color: var(--primary); }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 4px; }
+    .error-msg { color: #c53d55; font-size: 13px; margin-top: 8px; }
+    @media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } }
+  

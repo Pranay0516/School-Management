@@ -1,0 +1,52 @@
+
+    <div class="sa-dashboard">
+      <div class="welcome glass-card">
+        <div class="welcome-copy">
+          <p class="eyebrow">PLATFORM OVERVIEW</p>
+          <h2>Good morning,<br>Super Admin.</h2>
+          <p class="muted">Here's what's happening across all schools today.</p>
+        </div>
+        <div class="welcome-orb">🏛️</div>
+      </div>
+
+      <div class="stats-row">
+        <ef-stat-card label="TOTAL SCHOOLS"    value="142"   change="↑ 3 this month" trend="up" />
+        <ef-stat-card label="ACTIVE SUBSCRIPTIONS" value="138" change="97% renewal rate" trend="up" />
+        <ef-stat-card label="TOTAL STUDENTS"   value="84,210" change="Across all schools" trend="up" />
+        <ef-stat-card label="MONTHLY REVENUE"  value="₹12.4L" change="↑ 8% vs last month" trend="up" />
+      </div>
+
+      <div class="grid-two">
+        <article class="glass-card table-card">
+          <h3>Schools by Plan</h3>
+          <div class="plan-rows">
+            @for (p of planData; track p.name) {
+              <div class="plan-row">
+                <span class="plan-dot" [style.background]="p.color"></span>
+                <span class="plan-name">{{ p.name }}</span>
+                <div class="plan-bar-wrap">
+                  <div class="plan-bar" [style.width]="p.pct + '%'" [style.background]="p.color"></div>
+                </div>
+                <span class="plan-count">{{ p.count }}</span>
+              </div>
+            }
+          </div>
+        </article>
+
+        <article class="glass-card notices-card">
+          <h3>Recent Activity</h3>
+          <ul>
+            @for (a of recentActivity; track a.text) {
+              <li>
+                <span class="act-icon">{{ a.icon }}</span>
+                <div>
+                  <b>{{ a.text }}</b>
+                  <small>{{ a.time }}</small>
+                </div>
+              </li>
+            }
+          </ul>
+        </article>
+      </div>
+    </div>
+  

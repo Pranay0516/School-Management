@@ -1,0 +1,31 @@
+
+    .welcome {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 28px 32px; margin-top: 8px;
+    }
+    .welcome h2 { font-size: 1.9rem; margin: 8px 0 6px; }
+    .welcome-orb { font-size: 56px; color: var(--primary); opacity: .18; line-height: 1; }
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+    .grid-two  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .info-card { padding: 24px; }
+    h3 { margin: 0 0 16px; font-size: 1rem; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li {
+      display: flex; align-items: center; gap: 14px;
+      padding: 11px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+    }
+    li:last-child { border-bottom: none; }
+    .time {
+      font-size: 12px; font-weight: 800; color: var(--primary);
+      min-width: 44px; background: color-mix(in srgb, var(--primary) 10%, transparent);
+      padding: 3px 7px; border-radius: 6px; text-align: center;
+    }
+    .date {
+      font-size: 11px; font-weight: 800; color: var(--muted);
+      min-width: 54px; letter-spacing: .3px;
+    }
+    @media (max-width: 900px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .grid-two  { grid-template-columns: 1fr; }
+    }
+  

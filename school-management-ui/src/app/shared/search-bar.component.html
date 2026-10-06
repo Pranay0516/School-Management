@@ -1,0 +1,11 @@
+
+    <div class="search-bar">
+      <input
+        class="search-input"
+        [(ngModel)]="query"
+        [placeholder]="placeholder()"
+        (keyup.enter)="search.emit(query())"
+      />
+      <button class="outline-btn" type="button" (click)="search.emit(query())">Search</button>
+    </div>
+  

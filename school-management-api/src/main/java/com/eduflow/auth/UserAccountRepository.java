@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
     @EntityGraph(attributePaths = {"teacher", "student", "school"})
     Optional<UserAccount> findByUsernameIgnoreCase(String username);
+    @EntityGraph(attributePaths = {"teacher", "student", "school"})
+    Optional<UserAccount> findByCustomIdIgnoreCase(String customId);
     boolean existsByUsernameIgnoreCase(String username);
     boolean existsByTeacher_Id(Long teacherId);
 

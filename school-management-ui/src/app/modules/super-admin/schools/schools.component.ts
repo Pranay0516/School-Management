@@ -27,7 +27,7 @@ export class SchoolsComponent implements OnInit {
     city: ['', [Validators.required, Validators.maxLength(120)]],
     adminName: ['', [Validators.required, Validators.maxLength(120)]],
     adminEmail: ['', [Validators.required, Validators.email, Validators.maxLength(191)]],
-    adminPassword: ['', [Validators.required, Validators.minLength(12), Validators.maxLength(72)]],
+    adminPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(72)]],
   });
 
   ngOnInit(): void {

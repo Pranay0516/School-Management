@@ -55,6 +55,21 @@ $env:SPRING_PROFILES_ACTIVE = "uat"
 mvn spring-boot:run
 ```
 
+## Local MySQL
+
+The machine-specific `src/main/resources/application-local.yml` is intentionally ignored
+by Git because it contains local database credentials. Configure it locally for MySQL,
+then start the API with:
+
+```powershell
+$env:SPRING_PROFILES_ACTIVE = "local"
+mvn spring-boot:run
+```
+
+The local profile uses `ddl-auto: update` for development. Keep this profile and its
+credentials on the developer machine only; UAT and production use their dedicated profiles
+and externally managed secrets.
+
 ## Roles and tenant APIs
 
 | Role | Scope |

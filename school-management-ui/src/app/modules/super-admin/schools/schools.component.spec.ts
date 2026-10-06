@@ -29,13 +29,14 @@ describe('SchoolsComponent', () => {
     http.expectOne('http://localhost:8080/api/v1/super-admin/schools').flush([]);
 
     const component = fixture.componentInstance;
+    component.openCreate();
     component.form.setValue({
       schoolName: 'North School',
       schoolCode: 'NS01',
       city: 'Pune',
       adminName: 'Alex Admin',
       adminEmail: 'admin@north.example',
-      adminPassword: 'VeryStrongPassword123',
+      adminPassword: 'School8!',
     });
     component.createSchool();
 
@@ -54,5 +55,28 @@ describe('SchoolsComponent', () => {
 
     expect(component.lastCreated()?.adminCustomId).toBe('NS01-ADM-0001');
     http.expectOne('http://localhost:8080/api/v1/super-admin/schools').flush([]);
+  });
+
+  it('shows the password requirement and does not submit an invalid password', () => {
+    const fixture = TestBed.createComponent(SchoolsComponent);
+    fixture.detectChanges();
+    http.expectOne('http://localhost:8080/api/v1/super-admin/schools').flush([]);
+
+    const component = fixture.componentInstance;
+    component.openCreate();
+    component.form.setValue({
+      schoolName: 'North School',
+      schoolCode: 'NS01',
+      city: 'Pune',
+      adminName: 'Alex Admin',
+      adminEmail: 'admin@north.example',
+      adminPassword: 'short7!',
+    });
+    component.createSchool();
+    fixture.detectChanges();
+
+    expect(component.form.controls.adminPassword.touched).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('Password must be at least 8 characters.');
+    http.expectNone('http://localhost:8080/api/v1/super-admin/schools', 'invalid form');
   });
 });

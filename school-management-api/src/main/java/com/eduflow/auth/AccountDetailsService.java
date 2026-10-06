@@ -17,6 +17,7 @@ public class AccountDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return accounts.findByUsernameIgnoreCase(username)
+                .or(() -> accounts.findByCustomIdIgnoreCase(username))
                 .map(AccountPrincipal::new)
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid username or password"));
     }

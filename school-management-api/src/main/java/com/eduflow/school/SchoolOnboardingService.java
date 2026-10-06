@@ -178,7 +178,7 @@ public class SchoolOnboardingService {
             @NotBlank @Size(max = 120) String city,
             @NotBlank @Size(max = 120) String adminName,
             @NotBlank @Email @Size(max = 191) String adminEmail,
-            @NotBlank @Size(min = 12, max = 72) String adminPassword) {}
+            @NotBlank @Size(min = 8, max = 72) String adminPassword) {}
 
     public record CreateMemberRequest(
             @NotBlank @Size(max = 120) String name,

@@ -53,22 +53,48 @@
         <div class="form-grid">
           <label>School name
             <input formControlName="schoolName" autocomplete="organization" />
+            @if (form.controls.schoolName.touched && form.controls.schoolName.hasError('required')) {
+              <small class="field-error">School name is required.</small>
+            }
           </label>
           <label>School code / prefix
             <input formControlName="schoolCode" maxlength="12" autocapitalize="characters" />
+            @if (form.controls.schoolCode.touched && form.controls.schoolCode.hasError('required')) {
+              <small class="field-error">School code is required.</small>
+            } @else if (form.controls.schoolCode.touched && form.controls.schoolCode.hasError('pattern')) {
+              <small class="field-error">Use 2–12 letters or numbers, with no spaces.</small>
+            }
           </label>
           <label>City
             <input formControlName="city" autocomplete="address-level2" />
+            @if (form.controls.city.touched && form.controls.city.hasError('required')) {
+              <small class="field-error">City is required.</small>
+            }
           </label>
           <label>Primary admin name
             <input formControlName="adminName" autocomplete="name" />
+            @if (form.controls.adminName.touched && form.controls.adminName.hasError('required')) {
+              <small class="field-error">Primary admin name is required.</small>
+            }
           </label>
           <label>Admin contact email
             <input type="email" formControlName="adminEmail" autocomplete="email" />
+            @if (form.controls.adminEmail.touched && form.controls.adminEmail.hasError('required')) {
+              <small class="field-error">Admin email is required.</small>
+            } @else if (form.controls.adminEmail.touched && form.controls.adminEmail.hasError('email')) {
+              <small class="field-error">Enter a valid email address.</small>
+            }
           </label>
           <label>Initial password
-            <input type="password" formControlName="adminPassword" autocomplete="new-password" />
-            <small>Use 12–72 characters. The password is stored as a BCrypt hash.</small>
+            <input type="password" formControlName="adminPassword" maxlength="72" autocomplete="new-password" />
+            <small>Use 8–72 characters. The password is stored as a BCrypt hash.</small>
+            @if (form.controls.adminPassword.touched && form.controls.adminPassword.hasError('required')) {
+              <small class="field-error">Initial password is required.</small>
+            } @else if (form.controls.adminPassword.touched && form.controls.adminPassword.hasError('minlength')) {
+              <small class="field-error">Password must be at least 8 characters.</small>
+            } @else if (form.controls.adminPassword.touched && form.controls.adminPassword.hasError('maxlength')) {
+              <small class="field-error">Password must be no more than 72 characters.</small>
+            }
           </label>
         </div>
         @if (formError()) { <p class="error-msg" role="alert">{{ formError() }}</p> }

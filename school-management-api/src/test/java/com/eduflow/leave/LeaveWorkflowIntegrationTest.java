@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 class LeaveWorkflowIntegrationTest {
     private static final String SUPER_ADMIN_PASSWORD = "Super-Admin-Password-123";
-    private static final String ADMIN_PASSWORD = "School-Admin-Password-123";
+    private static final String ADMIN_PASSWORD = "School8!";
     private static final String TEACHER_PASSWORD = "Teacher-Password-123";
 
     @Autowired private MockMvc mockMvc;
@@ -114,6 +114,39 @@ class LeaveWorkflowIntegrationTest {
     void apiRejectsUnauthenticatedLeaveAccess() throws Exception {
         mockMvc.perform(get("/api/leaves/mine"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void teacherCanSignInUsingGeneratedEmployeeIdWhenAccountWasCreatedWithEmailUsername() throws Exception {
+        String suffix = Integer.toHexString(ThreadLocalRandom.current().nextInt(0x100000, 0xFFFFFF));
+        String superAdminToken = signIn("platform@example.com", SUPER_ADMIN_PASSWORD);
+        String adminId = createSchool(superAdminToken, "C" + suffix, "admin-" + suffix + "@example.com");
+        String adminToken = signIn(adminId, ADMIN_PASSWORD);
+        String email = "teacher-" + suffix + "@example.com";
+
+        MvcResult teacherResponse = mockMvc.perform(post("/api/teachers")
+                        .header("Authorization", bearer(adminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"employeeId":"temporary","name":"Test Teacher","subject":"Physics","className":"X",
+                                 "phone":"555-0199","email":"%s"}
+                                """.formatted(email)))
+                .andExpect(status().isCreated())
+                .andReturn();
+        JsonNode teacher = objectMapper.readTree(teacherResponse.getResponse().getContentAsString());
+        String employeeId = teacher.get("employeeId").asText();
+        long teacherId = teacher.get("id").asLong();
+
+        mockMvc.perform(post("/api/teachers/{id}/account", teacherId)
+                        .header("Authorization", bearer(adminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new CreateTeacherAccount(email, TEACHER_PASSWORD))))
+                .andExpect(status().isCreated());
+
+        JsonNode teacherLogin = login(employeeId, TEACHER_PASSWORD);
+        org.assertj.core.api.Assertions.assertThat(teacherLogin.get("customId").asText())
+                .isEqualTo(employeeId);
     }
 
     @Test
@@ -224,4 +257,5 @@ class LeaveWorkflowIntegrationTest {
                                 String adminName, String adminEmail, String adminPassword) {}
     private record CreateMember(String name, String email, String password, String role,
                                 String phone, String subject, String className) {}
+    private record CreateTeacherAccount(String username, String password) {}
 }

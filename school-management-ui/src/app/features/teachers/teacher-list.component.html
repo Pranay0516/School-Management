@@ -24,7 +24,7 @@
             <ef-badge [variant]="t.status === 'ACTIVE' ? 'success' : 'neutral'">{{ t.status }}</ef-badge>
             <span>
               @if (accountFor(t); as account) {
-                <small>Login: {{ account.username }}</small>
+                <small>Login ID: {{ t.employeeId }} or {{ account.username }}</small>
               } @else if (t.id) {
                 <button class="account-btn" type="button" (click)="openAccountSetup(t)">Create login</button>
               }
@@ -101,7 +101,7 @@
                 required />
             </ef-form-field>
           </div>
-          <p class="account-help">Use at least 12 characters. Share the login with the teacher securely.</p>
+          <p class="account-help">Sign in with the employee ID or login email above and this password. Use at least 12 characters.</p>
           @if (accountError()) { <p class="error-msg" role="alert">{{ accountError() }}</p> }
           <div class="form-actions">
             <button type="button" class="outline-btn" (click)="closeAccountSetup()">Cancel</button>

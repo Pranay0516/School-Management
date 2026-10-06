@@ -1,0 +1,63 @@
+.leave-approvals { padding: 24px; }
+.approvals-header, .header-actions, .teacher-line, .decision-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.approvals-header { margin-bottom: 20px; }
+.approvals-header h2, .teacher-line h3 { margin: 0; }
+.approvals-header p { margin: 4px 0 0; }
+.header-actions select {
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-strong);
+  color: var(--text);
+}
+.request-row { padding: 18px 0; border-top: 1px solid var(--border); }
+.teacher-line small, .reviewed-by { color: var(--muted); font-size: 12px; }
+.leave-meta { margin: 10px 0 4px; color: var(--text); font-size: 13px; font-weight: 700; }
+.leave-reason, .review-note { margin: 4px 0; color: var(--muted); font-size: 13px; white-space: pre-wrap; }
+.review-note { color: var(--text); }
+.review-controls { display: grid; gap: 10px; margin-top: 14px; }
+.review-controls label { display: grid; gap: 6px; color: var(--muted); font-size: 12px; font-weight: 700; }
+.review-controls textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-strong);
+  color: var(--text);
+  font: 500 13px var(--font-body);
+  resize: vertical;
+}
+.decision-actions { justify-content: flex-end; }
+.approve-btn, .reject-btn {
+  border: 0;
+  border-radius: 9px;
+  padding: 9px 16px;
+  color: white;
+  font: 700 13px var(--font-body);
+  cursor: pointer;
+}
+.approve-btn { background: #13845f; }
+.reject-btn { background: #bd4056; }
+.approve-btn:disabled, .reject-btn:disabled { opacity: .55; cursor: wait; }
+.empty-state { padding: 24px 0; margin: 0; color: var(--muted); text-align: center; }
+.error-msg { color: #c53d55; font-size: 13px; }
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .leave-approvals { padding: 16px; }
+  .approvals-header { align-items: flex-start; flex-direction: column; }
+  .header-actions { width: 100%; }
+}

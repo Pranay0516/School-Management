@@ -1,18 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ApiService, LeaveApplication, LeaveType } from '../../../core/api.service';
 import { BadgeComponent, BadgeVariant } from '../../../shared/badge.component';
 import { FormFieldComponent }  from '../../../shared/form-field.component';
 import { ModalComponent }      from '../../../shared/modal.component';
-
-interface LeaveApplication {
-  id: number;
-  type: string;
-  fromDate: string;
-  toDate: string;
-  reason: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  days: number;
-}
 
 @Component({
   selector: 'app-staff-leave',
@@ -21,26 +12,37 @@ interface LeaveApplication {
   templateUrl: './staff-leave.component.html',
   styleUrl: './staff-leave.component.scss',
 })
-export class StaffLeaveComponent {
-  applications = signal<LeaveApplication[]>([
-    { id: 1, type: 'Sick Leave',    fromDate: '2025-03-10', toDate: '2025-03-11', reason: 'Fever and cold.', status: 'APPROVED', days: 2 },
-    { id: 2, type: 'Casual Leave',  fromDate: '2025-02-14', toDate: '2025-02-14', reason: 'Personal work.',   status: 'APPROVED', days: 1 },
-    { id: 3, type: 'Emergency Leave', fromDate: '2025-01-20', toDate: '2025-01-22', reason: 'Family emergency.', status: 'APPROVED', days: 3 },
-  ]);
-
-  balance = [
-    { type: 'Sick',    total: 12, remaining: 10 },
-    { type: 'Casual',  total: 8,  remaining: 7  },
-    { type: 'Earned',  total: 15, remaining: 15 },
-  ];
-
+export class StaffLeaveComponent implements OnInit {
+  private readonly api = inject(ApiService);
+  applications = signal<LeaveApplication[]>([]);
+  loading = signal(false);
+  submitting = signal(false);
+  pageError = signal('');
   showModal = signal(false);
   formError = signal('');
-  draft = { type: 'Sick Leave', fromDate: '', toDate: '', reason: '' };
-  nextId = 4;
+  draft: { type: LeaveType; startDate: string; endDate: string; reason: string } = this.blankDraft();
+
+  ngOnInit() {
+    this.load();
+  }
+
+  load() {
+    this.loading.set(true);
+    this.pageError.set('');
+    this.api.myLeaveApplications().subscribe({
+      next: applications => {
+        this.applications.set(applications);
+        this.loading.set(false);
+      },
+      error: error => {
+        this.pageError.set(error.message);
+        this.loading.set(false);
+      },
+    });
+  }
 
   openApply() {
-    this.draft = { type: 'Sick Leave', fromDate: '', toDate: '', reason: '' };
+    this.draft = this.blankDraft();
     this.formError.set('');
     this.showModal.set(true);
   }
@@ -48,22 +50,45 @@ export class StaffLeaveComponent {
   closeModal() { this.showModal.set(false); }
 
   submit() {
-    if (!this.draft.fromDate || !this.draft.toDate || !this.draft.reason) {
-      this.formError.set('All fields are required.');
+    const reason = this.draft.reason.trim();
+    if (!this.draft.startDate || !this.draft.endDate || !reason) {
+      this.formError.set('Leave type, both dates, and a reason are required.');
       return;
     }
-    const from = new Date(this.draft.fromDate);
-    const to   = new Date(this.draft.toDate);
-    const days = Math.max(1, Math.round((to.getTime() - from.getTime()) / 86400000) + 1);
-    this.applications.update(list => [
-      { id: this.nextId++, ...this.draft, status: 'PENDING', days },
-      ...list,
-    ]);
-    this.closeModal();
+    if (this.draft.startDate > this.draft.endDate) {
+      this.formError.set('The start date must be on or before the end date.');
+      return;
+    }
+    if (reason.length > 1000) {
+      this.formError.set('The reason must not exceed 1000 characters.');
+      return;
+    }
+
+    this.submitting.set(true);
+    this.formError.set('');
+    this.api.applyForLeave({ ...this.draft, reason }).subscribe({
+      next: application => {
+        this.applications.update(current => [application, ...current]);
+        this.submitting.set(false);
+        this.closeModal();
+      },
+      error: error => {
+        this.submitting.set(false);
+        this.formError.set(error.message);
+      },
+    });
   }
 
   statusVariant(s: string): BadgeVariant {
     const m: Record<string, BadgeVariant> = { PENDING: 'warning', APPROVED: 'success', REJECTED: 'danger' };
     return m[s] ?? 'neutral';
+  }
+
+  leaveTypeLabel(type: LeaveType): string {
+    return `${type.charAt(0)}${type.slice(1).toLowerCase()} leave`;
+  }
+
+  private blankDraft(): { type: LeaveType; startDate: string; endDate: string; reason: string } {
+    return { type: 'SICK', startDate: '', endDate: '', reason: '' };
   }
 }

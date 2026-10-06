@@ -24,4 +24,20 @@ public class Teacher {
     public String phone;
     public String email;
     public String status = "ACTIVE";
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }

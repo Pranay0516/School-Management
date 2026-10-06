@@ -29,7 +29,7 @@ const MODULES: ModuleCard[] = [
     desc: 'Students, teachers, attendance, examinations, fees and menu configuration.',
     color: '#3868f4',
     bg: '#edf2ff',
-    roles: ['SUPER_ADMIN', 'ADMIN', 'TEACHER'],
+    roles: ['TEACHER'],
   },
   {
     id: 'parent-student',

@@ -16,3 +16,7 @@
         format_sql: true
 server:
   port: 8080
+app:
+  bootstrap-admin:
+    username: ${APP_BOOTSTRAP_ADMIN_USERNAME:}
+    password: ${APP_BOOTSTRAP_ADMIN_PASSWORD:}

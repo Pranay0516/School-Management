@@ -1,7 +1,7 @@
 package com.eduflow.menu;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
-@RestController @RequestMapping("/api/menus") @CrossOrigin(origins="http://localhost:4200") public class MenuController {
+@RestController @RequestMapping("/api/menus") @CrossOrigin(origins={"http://localhost:4200", "http://127.0.0.1:4200"}, allowCredentials="true") public class MenuController {
  private final MenuRepository repository; public MenuController(MenuRepository repository){this.repository=repository;}
  @GetMapping public List<Menu> all(){return repository.findAll();}
  @GetMapping("/my-access") public List<Menu> forRole(@RequestParam String role){return repository.findByActiveTrueOrderByDisplayOrderAsc().stream().filter(m->m.roles.contains(role)).toList();}

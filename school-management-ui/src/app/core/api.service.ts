@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { API_BASE_URL } from './api-base';
 
 // ── Domain models ────────────────────────────────────────────────────────────
 
@@ -77,6 +78,34 @@ export interface Menu {
   roles?: string[];
 }
 
+export interface TeacherAccount {
+  id: number;
+  username: string;
+  role: 'TEACHER';
+  teacherId: number;
+  teacherName: string;
+}
+
+export type LeaveType = 'SICK' | 'CASUAL' | 'EARNED' | 'EMERGENCY';
+export type LeaveStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export interface LeaveApplication {
+  id: number;
+  teacherId: number;
+  teacherName: string;
+  teacherUsername: string | null;
+  type: LeaveType;
+  startDate: string;
+  endDate: string;
+  days: number;
+  reason: string;
+  status: LeaveStatus;
+  reviewNote: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+}
+
 export interface StudentStats  { totalActive: number; }
 export interface TeacherStats  { totalActive: number; }
 export interface FeeStats      { pendingCount: number; }
@@ -85,7 +114,7 @@ export interface FeeStats      { pendingCount: number; }
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private readonly base = 'http://localhost:8080/api';
+  private readonly base = API_BASE_URL;
   private http = inject(HttpClient);
 
   // ── helpers ────────────────────────────────────────────────────────────────
@@ -156,6 +185,48 @@ export class ApiService {
 
   deleteTeacher(id: number): Observable<void> {
     return this.handle(this.http.delete<void>(`${this.base}/teachers/${id}`));
+  }
+
+  teacherAccounts(): Observable<TeacherAccount[]> {
+    return this.handle(this.http.get<TeacherAccount[]>(`${this.base}/teachers/accounts`));
+  }
+
+  createTeacherAccount(
+    teacherId: number,
+    account: { username: string; password: string },
+  ): Observable<TeacherAccount> {
+    return this.handle(
+      this.http.post<TeacherAccount>(`${this.base}/teachers/${teacherId}/account`, account),
+    );
+  }
+
+  myLeaveApplications(): Observable<LeaveApplication[]> {
+    return this.handle(this.http.get<LeaveApplication[]>(`${this.base}/leaves/mine`));
+  }
+
+  applyForLeave(application: {
+    type: LeaveType;
+    startDate: string;
+    endDate: string;
+    reason: string;
+  }): Observable<LeaveApplication> {
+    return this.handle(this.http.post<LeaveApplication>(`${this.base}/leaves`, application));
+  }
+
+  leaveApplicationsForAdmin(): Observable<LeaveApplication[]> {
+    return this.handle(this.http.get<LeaveApplication[]>(`${this.base}/leaves/admin`));
+  }
+
+  approveLeave(id: number, note = ''): Observable<LeaveApplication> {
+    return this.handle(
+      this.http.post<LeaveApplication>(`${this.base}/leaves/${id}/approve`, { note }),
+    );
+  }
+
+  rejectLeave(id: number, note: string): Observable<LeaveApplication> {
+    return this.handle(
+      this.http.post<LeaveApplication>(`${this.base}/leaves/${id}/reject`, { note }),
+    );
   }
 
   // ── Attendance ─────────────────────────────────────────────────────────────

@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ApiService, Teacher } from '../../core/api.service';
+import { forkJoin } from 'rxjs';
+import { ApiService, Teacher, TeacherAccount } from '../../core/api.service';
 import { BadgeComponent }      from '../../shared/badge.component';
 import { DataTableComponent }  from '../../shared/data-table.component';
 import { EmptyStateComponent } from '../../shared/empty-state.component';
@@ -25,7 +26,7 @@ const BLANK: Teacher = { employeeId: '', name: '', subject: '', className: '', p
 export class TeacherListComponent implements OnInit {
   private api = inject(ApiService);
 
-  cols = ['Teacher', 'Subject', 'Class', 'Phone', 'Status', ''];
+  cols = ['Teacher', 'Subject', 'Class', 'Phone', 'Status', 'Login', ''];
 
   teachers  = signal<Teacher[]>([]);
   showModal = signal(false);
@@ -33,15 +34,70 @@ export class TeacherListComponent implements OnInit {
   saving    = signal(false);
   error     = signal('');
   formError = signal('');
+  accounts = signal<TeacherAccount[]>([]);
+  accountTeacher = signal<Teacher | null>(null);
+  accountDraft = { username: '', password: '' };
+  accountError = signal('');
+  accountSaving = signal(false);
   search    = '';
   draft: Teacher = { ...BLANK };
 
   ngOnInit() { this.load(); }
 
   load(q = '') {
-    this.api.teachers(q).subscribe({
-      next: data => this.teachers.set(data),
+    forkJoin({
+      teachers: this.api.teachers(q),
+      accounts: this.api.teacherAccounts(),
+    }).subscribe({
+      next: ({ teachers, accounts }) => {
+        this.teachers.set(teachers);
+        this.accounts.set(accounts);
+      },
       error: e   => this.error.set(e.message),
+    });
+  }
+
+  accountFor(teacher: Teacher): TeacherAccount | undefined {
+    return this.accounts().find(account => account.teacherId === teacher.id);
+  }
+
+  openAccountSetup(teacher: Teacher) {
+    this.accountTeacher.set(teacher);
+    this.accountDraft = { username: teacher.email ?? '', password: '' };
+    this.accountError.set('');
+  }
+
+  closeAccountSetup() {
+    this.accountTeacher.set(null);
+  }
+
+  createAccount() {
+    const teacher = this.accountTeacher();
+    const username = this.accountDraft.username.trim();
+    if (!teacher?.id || !username || !this.accountDraft.password) {
+      this.accountError.set('An email username and password are required.');
+      return;
+    }
+    if (this.accountDraft.password.length < 12) {
+      this.accountError.set('Password must contain at least 12 characters.');
+      return;
+    }
+
+    this.accountSaving.set(true);
+    this.accountError.set('');
+    this.api.createTeacherAccount(teacher.id, {
+      username,
+      password: this.accountDraft.password,
+    }).subscribe({
+      next: account => {
+        this.accounts.update(accounts => [...accounts, account]);
+        this.accountSaving.set(false);
+        this.closeAccountSetup();
+      },
+      error: error => {
+        this.accountSaving.set(false);
+        this.accountError.set(error.message);
+      },
     });
   }
 

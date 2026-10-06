@@ -1,0 +1,84 @@
+<article class="leave-approvals glass-card">
+  <header class="approvals-header">
+    <div>
+      <p class="eyebrow">STAFF REQUESTS</p>
+      <h2>Leave Approvals</h2>
+      <p class="muted">Review teacher leave requests. Rejections require a reason.</p>
+    </div>
+    <div class="header-actions">
+      <label>
+        <span class="visually-hidden">Filter leave requests</span>
+        <select [ngModel]="filter()" (ngModelChange)="filter.set($event)">
+          <option value="PENDING">Pending</option>
+          <option value="APPROVED">Approved</option>
+          <option value="REJECTED">Rejected</option>
+          <option value="ALL">All requests</option>
+        </select>
+      </label>
+      <button type="button" class="outline-btn" (click)="load()" [disabled]="loading()">Refresh</button>
+    </div>
+  </header>
+
+  @if (pageError()) { <p class="error-msg" role="alert">{{ pageError() }}</p> }
+  @if (loading()) { <p class="empty-state">Loading leave requests…</p> }
+  @if (!loading() && !pageError() && !visibleApplications().length) {
+    <p class="empty-state">No {{ filter() === 'ALL' ? '' : filter().toLowerCase() }} leave requests.</p>
+  }
+
+  @for (application of visibleApplications(); track application.id) {
+    <section class="request-row">
+      <div class="request-details">
+        <div class="teacher-line">
+          <div>
+            <h3>{{ application.teacherName }}</h3>
+            @if (application.teacherUsername) { <small>{{ application.teacherUsername }}</small> }
+          </div>
+          <ef-badge [variant]="statusVariant(application.status)">{{ application.status }}</ef-badge>
+        </div>
+        <p class="leave-meta">
+          {{ leaveTypeLabel(application.type) }} · {{ application.startDate }} to {{ application.endDate }}
+          · {{ application.days }} day{{ application.days === 1 ? '' : 's' }}
+        </p>
+        <p class="leave-reason">{{ application.reason }}</p>
+        @if (application.reviewNote) {
+          <p class="review-note">Review note: {{ application.reviewNote }}</p>
+        }
+      </div>
+
+      @if (application.status === 'PENDING') {
+        <div class="review-controls">
+          <label>
+            <span>Decision note <small>(required for rejection)</small></span>
+            <textarea
+              [ngModel]="reviewNotes()[application.id] ?? ''"
+              (ngModelChange)="setReviewNote(application.id, $event)"
+              maxlength="1000"
+              rows="2"></textarea>
+          </label>
+          <div class="decision-actions">
+            <button
+              type="button"
+              class="reject-btn"
+              [disabled]="processingId() !== null"
+              (click)="reject(application)">
+              Reject
+            </button>
+            <button
+              type="button"
+              class="approve-btn"
+              [disabled]="processingId() !== null"
+              (click)="approve(application)">
+              {{ processingId() === application.id ? 'Saving…' : 'Approve' }}
+            </button>
+          </div>
+        </div>
+      } @else {
+        <small class="reviewed-by">
+          {{ application.status === 'APPROVED' ? 'Approved' : 'Rejected' }}
+          @if (application.reviewedBy) { by {{ application.reviewedBy }} }
+          @if (application.reviewedAt) { · {{ application.reviewedAt | date:'medium' }} }
+        </small>
+      }
+    </section>
+  }
+</article>

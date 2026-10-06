@@ -1,8 +1,10 @@
-﻿import { Component, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { TitleCasePipe }           from '@angular/common';
 import { FormsModule }              from '@angular/forms';
+import { AuthService } from './core/auth.service';
 
 import { AdminDashboardComponent }   from './features/admin/admin-dashboard.component';
+import { LeaveApprovalsComponent } from './features/admin/leave-approvals.component';
 import { TeacherDashboardComponent } from './features/teacher/teacher-dashboard.component';
 import { StudentDashboardComponent } from './features/student/student-dashboard.component';
 import { StudentListComponent }      from './features/students/student-list.component';
@@ -28,6 +30,7 @@ const ALL_MENUS: NavMenu[] = [
   { title: 'Examinations',    icon: 'exams',     roles: ['ADMIN','TEACHER','STUDENT','PARENT'] },
   { title: 'Question Papers', icon: 'papers',    roles: ['ADMIN','TEACHER'] },
   { title: 'Fees',            icon: 'fees',      roles: ['ADMIN','STUDENT','PARENT'] },
+  { title: 'Leave Approvals', icon: 'leaves',    roles: ['ADMIN'] },
   { title: 'Menu Management', icon: 'settings',  roles: ['ADMIN'] },
 ];
 
@@ -39,14 +42,15 @@ const ALL_MENUS: NavMenu[] = [
     AdminDashboardComponent, TeacherDashboardComponent, StudentDashboardComponent,
     StudentListComponent, TeacherListComponent,
     AttendanceComponent, ExaminationsComponent, ExamPapersComponent,
-    FeesComponent, MenuManagementComponent,
+    FeesComponent, MenuManagementComponent, LeaveApprovalsComponent,
     ModuleSelectorComponent, SuperAdminShellComponent,
     ParentStudentShellComponent, StaffShellComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
+export class App implements OnInit {
+  readonly auth = inject(AuthService);
   loggedIn         = signal(false);
   theme            = signal<'theme-1' | 'theme-2'>('theme-1');
   role             = signal('ADMIN');
@@ -54,12 +58,12 @@ export class App {
   profileOpen      = signal(false);
   sidebarCollapsed = signal(false);
   loginError       = signal('');
+  signingIn        = signal(false);
   showPassword     = signal(false);
   activeModule     = signal<'selector' | ModuleId>('selector');
 
-  login         = { username: '', password: '', role: 'ADMIN' };
+  login         = { username: '', password: '' };
   keepSignedIn  = false;
-  allRoles      = ['SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT', 'PARENT'];
 
   get visibleMenus(): NavMenu[] { return ALL_MENUS.filter(m => m.roles.includes(this.role())); }
 
@@ -71,41 +75,57 @@ export class App {
 
   toggleTheme() { this.theme.set(this.theme() === 'theme-1' ? 'theme-2' : 'theme-1'); }
 
+  ngOnInit() {
+    this.auth.restoreSession().subscribe({
+      next: user => {
+        if (user) {
+          this.login.username = user.username;
+          this.role.set(user.role);
+          this.loggedIn.set(true);
+        }
+      },
+      error: error => this.loginError.set(error.message),
+    });
+  }
+
   signIn() {
     if (!this.login.username.trim() || !this.login.password.trim()) {
       this.loginError.set('Please enter your credentials.');
       return;
     }
+    if (this.signingIn()) return;
+    this.signingIn.set(true);
     this.loginError.set('');
-    this.role.set(this.login.role || 'ADMIN');
-    this.activeModule.set('selector');
-    this.page.set('Dashboard');
-    this.loggedIn.set(true);
-  }
-
-  quickLogin(role: string) {
-    this.login.username = role === 'SUPER_ADMIN' ? 'owner@eduflow.io'
-      : role === 'ADMIN'   ? 'admin@demo.school'
-      : role === 'TEACHER' ? 'teacher@demo.school'
-      : 'student@demo.school';
-    this.login.password = 'demo123';
-    this.login.role     = role;
-    this.loginError.set('');
-    this.role.set(role);
-    this.activeModule.set('selector');
-    this.page.set('Dashboard');
-    this.loggedIn.set(true);
+    this.auth.signIn(this.login.username.trim(), this.login.password).subscribe({
+      next: user => {
+        this.login.password = '';
+        this.role.set(user.role);
+        this.activeModule.set('selector');
+        this.page.set('Dashboard');
+        this.loggedIn.set(true);
+        this.signingIn.set(false);
+      },
+      error: error => {
+        this.signingIn.set(false);
+        this.loginError.set(error.message);
+      },
+    });
   }
 
   signOut() {
-    this.loggedIn.set(false);
-    this.login.password = '';
-    this.profileOpen.set(false);
-    this.activeModule.set('selector');
-    this.showPassword.set(false);
+    this.auth.signOut().subscribe({
+      next: () => {
+        this.loggedIn.set(false);
+        this.login.password = '';
+        this.profileOpen.set(false);
+        this.activeModule.set('selector');
+        this.showPassword.set(false);
+        this.loginError.set('');
+      },
+      error: error => this.loginError.set(error.message),
+    });
   }
 
-  changeRole(role: string) { this.role.set(role); this.page.set('Dashboard'); this.profileOpen.set(false); }
   enterModule(moduleId: ModuleId) { this.activeModule.set(moduleId); this.page.set('Dashboard'); }
   backToSelector() { this.activeModule.set('selector'); }
 }

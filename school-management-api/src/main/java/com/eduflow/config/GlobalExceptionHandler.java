@@ -1,6 +1,8 @@
 package com.eduflow.config;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -31,6 +33,16 @@ public class GlobalExceptionHandler {
                 .map(e -> e.getField() + ": " + e.getDefaultMessage())
                 .collect(Collectors.joining(", "));
         return errorResponse(HttpStatus.BAD_REQUEST, message);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException ex) {
+        return errorResponse(HttpStatus.UNAUTHORIZED, "Invalid username or password.");
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
+        return errorResponse(HttpStatus.FORBIDDEN, "You are not authorized to perform this action.");
     }
 
     private ResponseEntity<Map<String, Object>> errorResponse(HttpStatus status, String message) {

@@ -3,7 +3,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.time.*;
 import java.util.*;
-@RestController @RequestMapping("/api/exam-papers") @CrossOrigin(origins="http://localhost:4200") public class ExamPaperController {
+@RestController @RequestMapping("/api/exam-papers") @CrossOrigin(origins={"http://localhost:4200", "http://127.0.0.1:4200"}, allowCredentials="true") public class ExamPaperController {
  private final ExamPaperRepository repository; public ExamPaperController(ExamPaperRepository repository){this.repository=repository;}
  @GetMapping public List<ExamPaper> all(){return repository.findAll();}
  @PostMapping public ExamPaper create(@RequestBody ExamPaper paper){paper.status=ExamPaper.Status.PENDING_APPROVAL;return repository.save(paper);}

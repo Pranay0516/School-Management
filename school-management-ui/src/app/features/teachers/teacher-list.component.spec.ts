@@ -1,7 +1,8 @@
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { TeacherListComponent } from './teacher-list.component';
+import { API_BASE_URL } from '../../core/api-base';
 
 describe('TeacherListComponent', () => {
   it('creates the component', async () => {
@@ -14,5 +15,9 @@ describe('TeacherListComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance).toBeTruthy();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne(`${API_BASE_URL}/teachers`).flush([]);
+    http.expectOne(`${API_BASE_URL}/teachers/accounts`).flush([]);
+    http.verify();
   });
 });

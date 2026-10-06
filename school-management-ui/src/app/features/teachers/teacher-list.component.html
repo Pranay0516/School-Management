@@ -11,7 +11,7 @@
         placeholder="Search by name or subject"
         (search)="load($event)" />
 
-      <ef-data-table [columns]="cols" style="--dt-cols: 2fr 1fr 1fr 1fr 1fr 80px">
+      <ef-data-table [columns]="cols" style="--dt-cols: 2fr 1fr 1fr 1fr 1fr 1fr 80px">
         @for (t of teachers(); track t.id) {
           <div class="dt-row">
             <div>
@@ -22,6 +22,13 @@
             <span>{{ t.className || '–' }}</span>
             <span>{{ t.phone || '–' }}</span>
             <ef-badge [variant]="t.status === 'ACTIVE' ? 'success' : 'neutral'">{{ t.status }}</ef-badge>
+            <span>
+              @if (accountFor(t); as account) {
+                <small>Login: {{ account.username }}</small>
+              } @else if (t.id) {
+                <button class="account-btn" type="button" (click)="openAccountSetup(t)">Create login</button>
+              }
+            </span>
             <div class="row-actions">
               <button class="icon-btn" (click)="openEdit(t)">✎</button>
               <button class="icon-btn danger" (click)="remove(t)">✕</button>
@@ -71,6 +78,35 @@
             <button type="button" class="outline-btn" (click)="closeModal()">Cancel</button>
             <button type="submit" class="primary-btn" [disabled]="saving()">
               {{ saving() ? 'Saving…' : (editing() ? 'Update teacher' : 'Add teacher') }}
+            </button>
+          </div>
+        </form>
+      </ef-modal>
+    }
+
+    @if (accountTeacher(); as teacher) {
+      <ef-modal eyebrow="TEACHER ACCOUNT" [title]="'Create login for ' + teacher.name" (close)="closeAccountSetup()">
+        <form (ngSubmit)="createAccount()">
+          <div class="form-grid">
+            <ef-form-field label="Login email">
+              <input [(ngModel)]="accountDraft.username" name="accountUsername" type="email" required />
+            </ef-form-field>
+            <ef-form-field label="Temporary password">
+              <input
+                [(ngModel)]="accountDraft.password"
+                name="accountPassword"
+                type="password"
+                autocomplete="new-password"
+                minlength="12"
+                required />
+            </ef-form-field>
+          </div>
+          <p class="account-help">Use at least 12 characters. Share the login with the teacher securely.</p>
+          @if (accountError()) { <p class="error-msg" role="alert">{{ accountError() }}</p> }
+          <div class="form-actions">
+            <button type="button" class="outline-btn" (click)="closeAccountSetup()">Cancel</button>
+            <button type="submit" class="primary-btn" [disabled]="accountSaving()">
+              {{ accountSaving() ? 'Creating…' : 'Create login' }}
             </button>
           </div>
         </form>

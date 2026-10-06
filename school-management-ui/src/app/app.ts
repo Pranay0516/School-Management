@@ -81,6 +81,7 @@ export class App implements OnInit {
         if (user) {
           this.login.username = user.username;
           this.role.set(user.role);
+          this.openWorkspaceForRole(user.role);
           this.loggedIn.set(true);
         }
       },
@@ -100,7 +101,7 @@ export class App implements OnInit {
       next: user => {
         this.login.password = '';
         this.role.set(user.role);
-        this.activeModule.set('selector');
+        this.openWorkspaceForRole(user.role);
         this.page.set('Dashboard');
         this.loggedIn.set(true);
         this.signingIn.set(false);
@@ -127,5 +128,19 @@ export class App implements OnInit {
   }
 
   enterModule(moduleId: ModuleId) { this.activeModule.set(moduleId); this.page.set('Dashboard'); }
-  backToSelector() { this.activeModule.set('selector'); }
+  backToSelector() {
+    this.openWorkspaceForRole(this.role());
+    this.page.set('Dashboard');
+  }
+
+  private openWorkspaceForRole(role: string) {
+    const workspaceByRole: Partial<Record<string, ModuleId>> = {
+      SUPER_ADMIN: 'super-admin',
+      ADMIN: 'school-portal',
+      TEACHER: 'staff',
+      STUDENT: 'parent-student',
+      PARENT: 'parent-student',
+    };
+    this.activeModule.set(workspaceByRole[role] ?? 'selector');
+  }
 }

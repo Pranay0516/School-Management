@@ -29,7 +29,7 @@ const MODULES: ModuleCard[] = [
     desc: 'Students, teachers, attendance, examinations, fees and menu configuration.',
     color: '#3868f4',
     bg: '#edf2ff',
-    roles: ['TEACHER'],
+    roles: ['ADMIN'],
   },
   {
     id: 'parent-student',
@@ -38,7 +38,7 @@ const MODULES: ModuleCard[] = [
     desc: 'Attendance calendar, timetable, results, fees and school notices.',
     color: '#0ea87e',
     bg: '#e8faf5',
-    roles: ['SUPER_ADMIN', 'ADMIN', 'STUDENT', 'PARENT'],
+    roles: ['STUDENT', 'PARENT'],
   },
   {
     id: 'staff',
@@ -47,7 +47,7 @@ const MODULES: ModuleCard[] = [
     desc: 'Mark attendance, manage exam papers, view timetable and apply for leave.',
     color: '#e87c35',
     bg: '#fff5ec',
-    roles: ['SUPER_ADMIN', 'ADMIN', 'TEACHER'],
+    roles: ['TEACHER'],
   },
 ];
 

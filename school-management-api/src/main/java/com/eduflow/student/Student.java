@@ -2,6 +2,7 @@ package com.eduflow.student;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "students")
@@ -23,5 +24,6 @@ public class Student {
     public String section;
     public String parentName;
     public String parentPhone;
+    public LocalDate dateOfBirth;
     public String status = "ACTIVE";
 }

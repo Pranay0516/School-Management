@@ -2,6 +2,7 @@ package com.eduflow.teacher;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "teachers")
@@ -23,6 +24,7 @@ public class Teacher {
     public String className;   // primary class assigned
     public String phone;
     public String email;
+    public LocalDate dateOfBirth;
     public String status = "ACTIVE";
 
     public Long getId() {

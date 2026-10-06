@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -48,6 +49,7 @@ public class FeeService {
         Fee fee = repo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Fee not found: " + id));
         fee.paymentStatus = Fee.PaymentStatus.PAID;
+        fee.paymentDate = LocalDate.now();
         return repo.save(fee);
     }
 

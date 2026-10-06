@@ -1,7 +1,8 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { TitleCasePipe }           from '@angular/common';
 import { FormsModule }              from '@angular/forms';
 import { AuthService } from './core/auth.service';
+import { LeaveNotificationService } from './core/leave-notification.service';
 
 import { AdminDashboardComponent }   from './features/admin/admin-dashboard.component';
 import { LeaveApprovalsComponent } from './features/admin/leave-approvals.component';
@@ -49,13 +50,15 @@ const ALL_MENUS: NavMenu[] = [
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App implements OnInit {
+export class App implements OnDestroy, OnInit {
   readonly auth = inject(AuthService);
+  readonly leaveNotifications = inject(LeaveNotificationService);
   loggedIn         = signal(false);
   theme            = signal<'theme-1' | 'theme-2'>('theme-1');
   role             = signal('ADMIN');
   page             = signal('Dashboard');
   profileOpen      = signal(false);
+  notificationsOpen = signal(false);
   sidebarCollapsed = signal(false);
   loginError       = signal('');
   signingIn        = signal(false);
@@ -74,6 +77,11 @@ export class App implements OnInit {
   });
 
   toggleTheme() { this.theme.set(this.theme() === 'theme-1' ? 'theme-2' : 'theme-1'); }
+  toggleNotifications() { this.notificationsOpen.update(open => !open); }
+  openLeaveApprovals() {
+    this.page.set('Leave Approvals');
+    this.notificationsOpen.set(false);
+  }
 
   ngOnInit() {
     this.auth.restoreSession().subscribe({
@@ -84,9 +92,14 @@ export class App implements OnInit {
           this.openWorkspaceForRole(user.role);
           this.loggedIn.set(true);
         }
+
       },
       error: error => this.loginError.set(error.message),
     });
+  }
+
+  ngOnDestroy() {
+    this.leaveNotifications.stop();
   }
 
   signIn() {
@@ -120,6 +133,8 @@ export class App implements OnInit {
         this.login.password = '';
         this.profileOpen.set(false);
         this.activeModule.set('selector');
+        this.leaveNotifications.stop();
+        this.notificationsOpen.set(false);
         this.showPassword.set(false);
         this.loginError.set('');
       },
@@ -142,5 +157,10 @@ export class App implements OnInit {
       PARENT: 'parent-student',
     };
     this.activeModule.set(workspaceByRole[role] ?? 'selector');
+    if (role === 'ADMIN') {
+      this.leaveNotifications.start();
+    } else {
+      this.leaveNotifications.stop();
+    }
   }
 }

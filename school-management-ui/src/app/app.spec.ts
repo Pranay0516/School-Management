@@ -52,6 +52,22 @@ describe('App', () => {
     expect(app.page()).toBe('Dashboard');
   });
 
+  it('opens Leave Approvals when a leave notification is selected', async () => {
+    const fixture = await createApp({
+      currentUser: signal<AuthUser | null>(null),
+      restoreSession: () => of(null),
+      signIn: () => of({
+        id: 1, username: 'admin@school.local', role: 'ADMIN', teacherId: null, teacherName: null,
+      }),
+      signOut: () => of(void 0),
+    });
+    const app = fixture.componentInstance;
+    app.openLeaveApprovals();
+
+    expect(app.page()).toBe('Leave Approvals');
+    expect(app.notificationsOpen()).toBe(false);
+  });
+
   it('opens the teacher dashboard directly after teacher sign-in', async () => {
     const fixture = await createApp({
       currentUser: signal<AuthUser | null>(null),

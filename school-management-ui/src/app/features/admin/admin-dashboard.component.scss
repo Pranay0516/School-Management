@@ -34,6 +34,10 @@
     .activity, .due-row, .bus, .birthday-list > div, .staff-list > div, .setup-list > div { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f5f0ec; }
     .activity:last-child, .due-row:last-child, .bus:last-child, .birthday-list > div:last-child, .staff-list > div:last-child, .setup-list > div:last-child { border-bottom: 0; }
     .activity > i { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 10px; background: #1bb466; color: white; font-style: normal; }
+    .leave-activity { width: 100%; border: 0; border-bottom: 1px solid #f5f0ec; background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer; }
+    .leave-activity:hover { background: #faf8ff; }
+    .leave-activity .leave-icon { background: #6255ea; }
+    .activity .leave-status { color: #946200; background: #fff5d6; }
     .activity span, .due-row span, .bus span, .birthday-list span, .staff-list span { flex: 1; min-width: 0; display: grid; gap: 3px; }
     .activity b, .due-row b, .bus b, .birthday-list b, .staff-list b { font-size: 12px; }
     .activity small, .due-row small, .bus small, .birthday-list small, .staff-list small { color: #9b8d81; font-size: 10px; }

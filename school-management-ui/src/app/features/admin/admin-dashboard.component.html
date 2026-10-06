@@ -24,7 +24,16 @@
           <article class="widget card ecosystem wide-two"><header><div><h3>▦ Ecosystem Hub</h3><small><b>238</b> modules — everything your school runs, in one place</small></div><input aria-label="Search modules" placeholder="⌕  Search modules..." /></header><div class="tabs"><span class="selected">All</span><span>Finance</span><span>Academics</span><span>Students</span><span>Operations</span><span>Engagement</span><span>Admin</span></div><div class="module-links">@for (module of modules; track module.name) { <div><i [class]="module.color">{{ module.icon }}</i><b>{{ module.name }}</b></div> }</div></article>
         } @else { <article class="widget card ecosystem wide-two is-disabled"><header><div><h3>▦ Ecosystem Hub</h3><small>School modules and shortcuts</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
         @if (access.isEnabled('live-activity')) {
-          <article class="widget card"><header><div><h3>Live Activity</h3><small>Real-time updates</small></div><span class="pill">All &nbsp; Fees</span></header><div class="activity-list">@for (activity of activities; track activity.name) { <div class="activity"><i>✓</i><span><b>{{ activity.name }}</b><small>{{ activity.when }} &nbsp; <em>Paid</em></small></span><small class="time">Today<br>12:00 AM</small></div> }</div></article>
+          <article class="widget card"><header><div><h3>Live Activity</h3><small>Recent school updates</small></div><span class="pill">All &nbsp; Activity</span></header><div class="activity-list">
+            @for (application of leaveActivities(); track application.id) {
+              <button type="button" class="activity leave-activity" (click)="openLeaveApprovals.emit()">
+                <i class="leave-icon">↗</i>
+                <span><b>{{ application.teacherName }} submitted {{ application.type.toLowerCase() }} leave</b><small>{{ application.startDate }} to {{ application.endDate }} · <em class="leave-status">{{ application.status }}</em></small></span>
+                <small class="time">{{ application.createdAt | date:'short' }}</small>
+              </button>
+            }
+            @for (activity of activities; track activity.name) { <div class="activity"><i>✓</i><span><b>{{ activity.name }}</b><small>{{ activity.when }} &nbsp; <em>Paid</em></small></span><small class="time">Today<br>12:00 AM</small></div> }
+          </div></article>
         } @else { <article class="widget card is-disabled"><header><div><h3>Live Activity</h3><small>Real-time updates</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
 
         @if (access.isEnabled('attendance-breakdown')) {

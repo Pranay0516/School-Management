@@ -220,6 +220,41 @@
             <h1 class="topbar-title">{{ page() }}</h1>
           </div>
           <div class="topbar-right">
+            @if (role() === 'ADMIN') {
+              <div class="notification-wrap">
+                <button
+                  type="button"
+                  class="icon-action notification-action"
+                  (click)="toggleNotifications()"
+                  [attr.aria-expanded]="notificationsOpen()"
+                  aria-label="Leave notifications">
+                  <span aria-hidden="true">🔔</span>
+                  @if (leaveNotifications.pendingApplications().length) {
+                    <span class="notification-count">{{ leaveNotifications.pendingApplications().length }}</span>
+                  }
+                </button>
+                @if (notificationsOpen()) {
+                  <section class="notification-drop glass-card" aria-label="Leave notifications">
+                    <header>
+                      <b>Leave notifications</b>
+                      <small>{{ leaveNotifications.pendingApplications().length }} pending</small>
+                    </header>
+                    @if (leaveNotifications.error()) {
+                      <p class="notification-error" role="alert">{{ leaveNotifications.error() }}</p>
+                    } @else if (!leaveNotifications.pendingApplications().length) {
+                      <p class="notification-empty">No pending leave requests.</p>
+                    }
+                    @for (application of leaveNotifications.pendingApplications(); track application.id) {
+                      <button type="button" class="notification-item" (click)="openLeaveApprovals()">
+                        <b>{{ application.teacherName }} requested leave</b>
+                        <small>{{ application.type }} · {{ application.startDate }} to {{ application.endDate }}</small>
+                      </button>
+                    }
+                    <button type="button" class="notification-all" (click)="openLeaveApprovals()">View Leave Approvals</button>
+                  </section>
+                }
+              </div>
+            }
             <button class="icon-action" (click)="toggleTheme()" title="Toggle theme">◐</button>
             <div class="avatar-wrap" (click)="profileOpen.set(!profileOpen())">
               <div class="avatar">{{ initials() }}</div>
@@ -239,8 +274,8 @@
             </div>
           </div>
         </header>
-        <section class="content" (click)="profileOpen.set(false)">
-          @if (page() === 'Dashboard' && role() === 'ADMIN')   { <app-admin-dashboard /> }
+        <section class="content" (click)="profileOpen.set(false); notificationsOpen.set(false)">
+          @if (page() === 'Dashboard' && role() === 'ADMIN')   { <app-admin-dashboard (openLeaveApprovals)="openLeaveApprovals()" /> }
           @if (page() === 'Dashboard' && role() === 'TEACHER') { <app-teacher-dashboard /> }
           @if (page() === 'Dashboard' && (role() === 'STUDENT' || role() === 'PARENT')) { <app-student-dashboard /> }
           @if (page() === 'Students')        { <app-student-list /> }

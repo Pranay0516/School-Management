@@ -1,21 +1,27 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, EventEmitter, OnInit, Output, computed, inject, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { ApiService } from '../../core/api.service';
 import { DashboardAccessService } from '../../core/dashboard-access.service';
+import { LeaveNotificationService } from '../../core/leave-notification.service';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
+  imports: [DatePipe],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss',
 })
 export class AdminDashboardComponent implements OnInit {
   readonly access = inject(DashboardAccessService);
+  readonly leaveNotifications = inject(LeaveNotificationService);
   private api = inject(ApiService);
+  @Output() readonly openLeaveApprovals = new EventEmitter<void>();
 
   studentCount = signal('–');
   teacherCount = signal('–');
   pendingFees  = signal('–');
+  readonly leaveActivities = computed(() => this.leaveNotifications.recentApplications());
 
   modules = [
     { name: 'Students', icon: '♟', color: 'blue' }, { name: 'Fees', icon: '₹', color: 'green' },

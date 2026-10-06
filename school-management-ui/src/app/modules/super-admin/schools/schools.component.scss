@@ -1,15 +1,24 @@
-
-    .panel { padding: 24px; margin-top: 8px; }
-    .row-actions { display: flex; gap: 6px; }
-    .icon-btn {
-      border: 1px solid var(--border); background: var(--surface-strong);
-      border-radius: 8px; padding: 5px 8px; font-size: 13px; cursor: pointer;
-      color: var(--muted); transition: all .15s;
-    }
-    .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
-    .students-count { font-weight: 700; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .form-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 4px; }
-    .error-msg { color: #c53d55; font-size: 13px; margin-top: 8px; }
-    @media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } }
-  
+.panel { padding: 24px; margin-top: 8px; }
+.school-list { margin-top: 18px; }
+.school-list-head, .school-row { display: grid; grid-template-columns: 2fr 1fr 1fr .7fr; gap: 14px; align-items: center; padding: 13px 10px; border-bottom: 1px solid var(--border); }
+.school-list-head { color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.school-row { color: var(--text); font-size: 13px; }
+.school-row code, .created-banner code { color: var(--primary); font-weight: 800; }
+.school-row .inactive { color: #a23b4c; }
+.empty-message { padding: 24px 8px; color: var(--muted); font-size: 13px; }
+.created-banner { display: grid; grid-template-columns: 1fr 1fr 1fr auto; align-items: center; gap: 12px; margin-top: 16px; padding: 14px; border: 1px solid #9bd8b2; border-radius: 10px; background: #eaf8ef; color: #17633c; font-size: 13px; }
+.dismiss-btn { border: 0; background: transparent; color: inherit; text-decoration: underline; cursor: pointer; }
+.error-msg { color: #b4233d; font-size: 13px; }
+.form-backdrop { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; padding: 18px; background: rgb(10 20 35 / 55%); }
+.create-panel { width: min(720px, 100%); padding: 24px; }
+.create-panel h2 { margin: 0 0 8px; color: var(--text); }
+.create-panel > p { margin: 0 0 18px; color: var(--muted); font-size: 13px; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.form-grid label { display: grid; gap: 6px; color: var(--text); font-size: 12px; font-weight: 700; }
+.form-grid input { width: 100%; min-height: 40px; box-sizing: border-box; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-strong); color: var(--text); padding: 9px 10px; }
+.form-grid small { color: var(--muted); font-size: 11px; font-weight: 400; }
+.form-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 18px; }
+.form-actions button { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; cursor: pointer; }
+.form-actions .primary-btn { border-color: var(--primary); background: var(--primary); color: white; font-weight: 700; }
+@media (max-width: 720px) { .created-banner { grid-template-columns: 1fr; } .school-list-head { display: none; } .school-row { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } }

@@ -55,25 +55,25 @@
           <div class="lr-logo-sm">◆</div>
           <div>
             <h2>Welcome back</h2>
-            <p class="lr-sub">Sign in to your EduFlow account</p>
+            <p class="lr-sub">Sign in with your school ID</p>
           </div>
         </div>
 
         <!-- Form -->
         <form class="lr-form" (ngSubmit)="signIn()" novalidate>
 
-          <!-- Account email -->
+          <!-- Account ID -->
           <div class="lf-group">
-            <label class="lf-label">Account email</label>
+            <label class="lf-label">Custom ID</label>
             <div class="lf-input-wrap">
               <span class="lf-icon">✉</span>
               <input
                 class="lf-input"
-                type="email"
+                type="text"
                 name="username"
                 [(ngModel)]="login.username"
                 autocomplete="username"
-                placeholder="Enter your account email"
+                placeholder="e.g. DPS01-ADM-0001"
                 required />
             </div>
           </div>
@@ -98,12 +98,6 @@
               </button>
             </div>
           </div>
-
-          <!-- Keep signed in -->
-          <label class="lf-keep">
-            <input type="checkbox" [(ngModel)]="keepSignedIn" name="keep" />
-            <span>Keep me signed in</span>
-          </label>
 
           @if (loginError()) {
             <p class="lf-error" role="alert">{{ loginError() }}</p>
@@ -216,7 +210,7 @@
       <div class="main-wrap">
         <header class="topbar">
           <div class="topbar-left">
-            <p class="topbar-meta">Academic Year 2026-27</p>
+            <p class="topbar-meta">Academic Year {{ academicYear() }}</p>
             <h1 class="topbar-title">{{ page() }}</h1>
           </div>
           <div class="topbar-right">
@@ -278,6 +272,7 @@
           @if (page() === 'Dashboard' && role() === 'ADMIN')   { <app-admin-dashboard (openLeaveApprovals)="openLeaveApprovals()" /> }
           @if (page() === 'Dashboard' && role() === 'TEACHER') { <app-teacher-dashboard /> }
           @if (page() === 'Dashboard' && (role() === 'STUDENT' || role() === 'PARENT')) { <app-student-dashboard /> }
+          @if (page() === 'Members' && role() === 'ADMIN') { <app-school-members /> }
           @if (page() === 'Students')        { <app-student-list /> }
           @if (page() === 'Teachers')        { <app-teacher-list /> }
           @if (page() === 'Attendance')      { <app-attendance /> }

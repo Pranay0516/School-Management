@@ -1,12 +1,15 @@
 package com.eduflow.student;
 
+import com.eduflow.tenant.SchoolScopedEntity;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Filter;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "students")
-public class Student {
+@Filter(name = "schoolScope", condition = "school_id = :schoolId")
+public class Student extends SchoolScopedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +27,7 @@ public class Student {
     public String section;
     public String parentName;
     public String parentPhone;
+    public String email;
     public LocalDate dateOfBirth;
     public String status = "ACTIVE";
 }

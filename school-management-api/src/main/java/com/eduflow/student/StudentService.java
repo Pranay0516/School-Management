@@ -1,6 +1,9 @@
 package com.eduflow.student;
 
 import jakarta.persistence.EntityNotFoundException;
+import com.eduflow.school.SchoolIdGenerator;
+import com.eduflow.school.SchoolIdSequence;
+import com.eduflow.tenant.TenantContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,9 +14,11 @@ import java.util.List;
 public class StudentService {
 
     private final StudentRepository repo;
+    private final SchoolIdGenerator ids;
 
-    public StudentService(StudentRepository repo) {
+    public StudentService(StudentRepository repo, SchoolIdGenerator ids) {
         this.repo = repo;
+        this.ids = ids;
     }
 
     public List<Student> findAll(String search) {
@@ -30,9 +35,7 @@ public class StudentService {
 
     @Transactional
     public Student create(Student student) {
-        if (repo.existsByAdmissionNo(student.admissionNo)) {
-            throw new IllegalArgumentException("Admission number already exists: " + student.admissionNo);
-        }
+        student.admissionNo = ids.nextId(TenantContext.requireSchoolId(), SchoolIdSequence.MemberRole.STUDENT);
         if (student.status == null || student.status.isBlank()) {
             student.status = "ACTIVE";
         }
@@ -47,6 +50,7 @@ public class StudentService {
         existing.section     = incoming.section;
         existing.parentName  = incoming.parentName;
         existing.parentPhone = incoming.parentPhone;
+        existing.dateOfBirth = incoming.dateOfBirth != null ? incoming.dateOfBirth : existing.dateOfBirth;
         existing.status      = incoming.status != null ? incoming.status : existing.status;
         return repo.save(existing);
     }

@@ -1,80 +1,216 @@
-
-    <div class="dashboard">
-      <div class="welcome-row">
-        <div>
-          <h2>Good Afternoon, school 👋</h2>
-          <p>Here's what's happening at Yug International School today — Monday, 05 October 2026</p>
-        </div>
-        <div class="update-strip"><b>⚑ &nbsp;UPDATES</b><span>Oct 01</span><span>🔴 holiday (Oct 01)</span><span>🔴 Tomorrow is TUE</span></div>
+<div class="dashboard">
+  @if (loading()) {
+    <p class="dashboard-message" role="status">Loading school dashboard…</p>
+  } @else if (error()) {
+    <div class="dashboard-message dashboard-error" role="alert">
+      <span>{{ error() }}</span>
+      <button type="button" class="outline-btn" (click)="load()">Retry</button>
+    </div>
+  } @else if (dashboard(); as data) {
+    <div class="welcome-row">
+      <div>
+        <h2>{{ greeting() }}, {{ data.schoolName }} 👋</h2>
+        <p>Here's what's happening at your school today — {{ today() | date:'fullDate' }}</p>
       </div>
-      <div class="stats-row">
-        @if (access.isEnabled('total-students')) { <article class="stat-card widget"><span class="stat-icon blue">♟</span><strong>{{ studentCount() }}</strong><small>Total Students</small></article> }
-        @else { <article class="stat-card widget is-disabled"><span class="stat-icon blue">♟</span><strong>{{ studentCount() }}</strong><small>Total Students</small><span class="locked">Disabled by Super Admin</span></article> }
-        @if (access.isEnabled('collected-month')) { <article class="stat-card widget"><span class="stat-icon green">▣</span><strong>₹28,02,014</strong><small>Collected This Month <em>↑ 615%</em></small></article> }
-        @else { <article class="stat-card widget is-disabled"><span class="stat-icon green">▣</span><strong>₹28,02,014</strong><small>Collected This Month</small><span class="locked">Disabled by Super Admin</span></article> }
-        @if (access.isEnabled('attendance-today')) { <article class="stat-card widget"><span class="stat-icon purple">✓</span><strong>1%</strong><small>Attendance Today</small></article> }
-        @else { <article class="stat-card widget is-disabled"><span class="stat-icon purple">✓</span><strong>1%</strong><small>Attendance Today</small><span class="locked">Disabled by Super Admin</span></article> }
-        @if (access.isEnabled('active-staff')) { <article class="stat-card widget"><span class="stat-icon violet">▣</span><strong>{{ teacherCount() }}</strong><small>Active Staff</small></article> }
-        @else { <article class="stat-card widget is-disabled"><span class="stat-icon violet">▣</span><strong>{{ teacherCount() }}</strong><small>Active Staff</small><span class="locked">Disabled by Super Admin</span></article> }
-        @if (access.isEnabled('pending-dues')) { <article class="stat-card widget"><span class="stat-icon red">!</span><strong>₹42,01,010</strong><small>Pending Dues (All Years)</small></article> }
-        @else { <article class="stat-card widget is-disabled"><span class="stat-icon red">!</span><strong>₹42,01,010</strong><small>Pending Dues (All Years)</small><span class="locked">Disabled by Super Admin</span></article> }
-      </div>
-      <div class="dashboard-grid">
-        @if (access.isEnabled('ecosystem-hub')) {
-          <article class="widget card ecosystem wide-two"><header><div><h3>▦ Ecosystem Hub</h3><small><b>238</b> modules — everything your school runs, in one place</small></div><input aria-label="Search modules" placeholder="⌕  Search modules..." /></header><div class="tabs"><span class="selected">All</span><span>Finance</span><span>Academics</span><span>Students</span><span>Operations</span><span>Engagement</span><span>Admin</span></div><div class="module-links">@for (module of modules; track module.name) { <div><i [class]="module.color">{{ module.icon }}</i><b>{{ module.name }}</b></div> }</div></article>
-        } @else { <article class="widget card ecosystem wide-two is-disabled"><header><div><h3>▦ Ecosystem Hub</h3><small>School modules and shortcuts</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
-        @if (access.isEnabled('live-activity')) {
-          <article class="widget card"><header><div><h3>Live Activity</h3><small>Recent school updates</small></div><span class="pill">All &nbsp; Activity</span></header><div class="activity-list">
-            @for (application of leaveActivities(); track application.id) {
-              <button type="button" class="activity leave-activity" (click)="openLeaveApprovals.emit()">
-                <i class="leave-icon">↗</i>
-                <span><b>{{ application.teacherName }} submitted {{ application.type.toLowerCase() }} leave</b><small>{{ application.startDate }} to {{ application.endDate }} · <em class="leave-status">{{ application.status }}</em></small></span>
-                <small class="time">{{ application.createdAt | date:'short' }}</small>
-              </button>
-            }
-            @for (activity of activities; track activity.name) { <div class="activity"><i>✓</i><span><b>{{ activity.name }}</b><small>{{ activity.when }} &nbsp; <em>Paid</em></small></span><small class="time">Today<br>12:00 AM</small></div> }
-          </div></article>
-        } @else { <article class="widget card is-disabled"><header><div><h3>Live Activity</h3><small>Real-time updates</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
-
-        @if (access.isEnabled('attendance-breakdown')) {
-          <article class="widget card"><header><div><h3>Today's Attendance</h3><small>Students — 05 Oct</small></div></header><div class="attendance-summary"><div class="donut"><b>1%</b><small>Present</small></div><div class="attendance-numbers"><p>🟣 Present <b>3</b></p><p>🔴 Absent <b>221</b></p><p>🔵 Enrolled <b>224</b></p></div></div><h4>CLASS-WISE BREAKDOWN</h4><div class="class-list">@for (row of classAttendance; track row.name) { <div><b>{{ row.name }}</b><span>🟢 0%</span><span>🔴 {{ row.absent }}</span></div> }</div></article>
-        } @else { <article class="widget card is-disabled"><header><div><h3>Today's Attendance</h3><small>Students — 05 Oct</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
-        @if (access.isEnabled('pending-fees')) {
-          <article class="widget card"><header><div><h3>Pending Fee Dues</h3><small>Top due students</small></div></header><div class="due-list">@for (student of dueStudents; track student.name) { <div class="due-row"><i [class]="student.color">{{ student.initials }}</i><span><b>{{ student.name }}</b><small>{{ student.className }}</small></span><strong>₹24,000</strong><em>Overdue</em></div> }</div></article>
-        } @else { <article class="widget card is-disabled"><header><div><h3>Pending Fee Dues</h3><small>Top due students</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
-        @if (access.isEnabled('timetable')) {
-          <article class="widget card"><header><div><h3>Today's Timetable</h3><small>Nursery A</small></div></header><div class="timetable">@for (period of timetable; track period.time) { <div><b>{{ period.time }}</b><span><strong>{{ period.subject }}</strong><small>{{ period.teacher }}</small></span></div> }</div></article>
-        } @else { <article class="widget card is-disabled"><header><div><h3>Today's Timetable</h3><small>Nursery A</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
-
-        @if (access.isEnabled('upcoming-events')) {
-          <article class="widget card"><header><div><h3>Upcoming Events</h3><small>This week</small></div></header><div class="empty">No upcoming events.</div></article>
-        } @else { <article class="widget card is-disabled"><header><div><h3>Upcoming Events</h3><small>This week</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
-        @if (access.isEnabled('transport-status')) {
-          <article class="widget card"><header><div><h3>🚌 Transport Status</h3><small>Fleet overview</small></div></header><div class="transport-list">@for (bus of buses; track bus.number) { <div class="bus"><i [class]="bus.color">▣</i><span><b>{{ bus.number }}</b><small>{{ bus.route }}</small></span><em [class]="bus.stateClass">● {{ bus.state }}</em></div> }</div></article>
-        } @else { <article class="widget card is-disabled"><header><div><h3>🚌 Transport Status</h3><small>Fleet overview</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
-        @if (access.isEnabled('fee-overview')) {
-          <article class="widget card"><header><div><h3>Fee Collection Overview</h3><small>Daily collections — last 15 days</small></div></header><div class="fee-chart"><div class="chart-bars">@for (bar of feeBars; track $index) { <i [style.height.%]="bar"></i> }</div><div class="chart-labels"><span>Sep 20</span><span>Sep 25</span><span>Sep 30</span><span>Oct 02</span></div></div><small class="legend">🟣 Collected (₹)</small></article>
-        } @else { <article class="widget card is-disabled"><header><div><h3>Fee Collection Overview</h3><small>Daily collections — last 15 days</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
-
-        @if (access.isEnabled('announcements')) {
-          <article class="widget card"><header><div><h3>📢 Announcements</h3><small>Latest notices</small></div></header><div class="notice-list">@for (notice of announcements; track notice.title) { <div><b>{{ notice.title }}</b><small>{{ notice.body }}</small><small>◷ &nbsp;4 days ago</small></div> }</div></article>
-        } @else { <article class="widget card is-disabled"><header><div><h3>📢 Announcements</h3><small>Latest notices</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
-        @if (access.isEnabled('upcoming-exams')) {
-          <article class="widget card"><header><div><h3>▣ Upcoming Exams</h3><small>Next scheduled papers</small></div></header><div class="empty">No upcoming exams.</div></article>
-        } @else { <article class="widget card is-disabled"><header><div><h3>▣ Upcoming Exams</h3><small>Next scheduled papers</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
-        @if (access.isEnabled('admissions')) {
-          <article class="widget card"><header><div><h3>♟ Admissions</h3><small>Enquiry summary</small></div></header><div class="admission-grid"><div><b>0</b><small>Admitted</small></div><div><b>5</b><small>Pending</small></div><div><b>0</b><small>Interested</small></div><div><b>0</b><small>Rejected</small></div></div><div class="capacity"><span>Seat Capacity</span><b>2%</b><i><b></b></i></div></article>
-        } @else { <article class="widget card is-disabled"><header><div><h3>♟ Admissions</h3><small>Enquiry summary</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
-
-        @if (access.isEnabled('birthdays-library')) {
-          <article class="widget card"><header><div><h3>🎂 Today's Birthdays</h3><small>Students & Staff</small></div></header><div class="birthday-list">@for (person of birthdays; track person.name) { <div><i>{{ person.icon }}</i><span><b>{{ person.name }}</b><small>{{ person.detail }}</small></span><strong>10 Oct</strong></div> }</div><h4>▤ Library Today</h4><div class="library-stats"><span><b>0</b><small>Issued</small></span><span><b>0</b><small>Returned</small></span><span><b>2</b><small>Overdue</small></span></div></article>
-        } @else { <article class="widget card is-disabled"><header><div><h3>🎂 Today's Birthdays & Library</h3><small>Students, staff and books</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
-        @if (access.isEnabled('staff-snapshot')) {
-          <article class="widget card"><header><div><h3>♟ Staff Snapshot</h3><small>Attendance today</small></div></header><div class="staff-totals"><span><b>{{ teacherCount() }}</b><small>Total Staff</small></span><span><b>0</b><small>Present</small></span><span><b>8</b><small>Away</small></span></div><div class="progress"><i></i></div><div class="staff-list">@for (member of staff; track member.name) { <div><i [class]="member.color">{{ member.initials }}</i><span><b>{{ member.name }}</b><small>{{ member.title }}</small></span><em>Not marked</em></div> }</div></article>
-        } @else { <article class="widget card is-disabled"><header><div><h3>♟ Staff Snapshot</h3><small>Attendance today</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
-        @if (access.isEnabled('setup-status')) {
-          <article class="widget card"><header><div><h3>☑ Setup Status</h3><small>School configuration</small></div></header><div class="setup-list">@for (step of setupSteps; track step) { <div><i>✓</i><b>{{ step }}</b><em>Done</em></div> }</div></article>
-        } @else { <article class="widget card is-disabled"><header><div><h3>☑ Setup Status</h3><small>School configuration</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+      <div class="update-strip">
+        <b>⚑ &nbsp;UPDATES</b>
+        @for (event of data.events.slice(0, 3); track event.title) {
+          <span>{{ event.eventDate | date:'MMM d' }} · {{ event.title }}</span>
+        } @empty {
+          <span>No upcoming school events</span>
+        }
       </div>
     </div>
-  
+
+    <div class="stats-row">
+      @if (access.isEnabled('total-students')) { <article class="stat-card widget"><span class="stat-icon blue">♟</span><strong>{{ data.totalStudents | number }}</strong><small>Total Students</small></article> }
+      @else { <article class="stat-card widget is-disabled"><span class="stat-icon blue">♟</span><strong>{{ data.totalStudents | number }}</strong><small>Total Students</small><span class="locked">Disabled by Super Admin</span></article> }
+      @if (access.isEnabled('collected-month')) { <article class="stat-card widget"><span class="stat-icon green">▣</span><strong>{{ data.collectedThisMonth | currency:'INR':'symbol':'1.0-0' }}</strong><small>Collected This Month <em [class.negative]="data.collectionGrowthPercent < 0">{{ data.collectionGrowthPercent >= 0 ? '↑' : '↓' }} {{ data.collectionGrowthPercent | number:'1.0-0' }}%</em></small></article> }
+      @else { <article class="stat-card widget is-disabled"><span class="stat-icon green">▣</span><strong>{{ data.collectedThisMonth | currency:'INR':'symbol':'1.0-0' }}</strong><small>Collected This Month</small><span class="locked">Disabled by Super Admin</span></article> }
+      @if (access.isEnabled('attendance-today')) { <article class="stat-card widget"><span class="stat-icon purple">✓</span><strong>{{ data.attendancePercent }}%</strong><small>Attendance Today · {{ data.enrolledStudents }} marked</small></article> }
+      @else { <article class="stat-card widget is-disabled"><span class="stat-icon purple">✓</span><strong>{{ data.attendancePercent }}%</strong><small>Attendance Today</small><span class="locked">Disabled by Super Admin</span></article> }
+      @if (access.isEnabled('active-staff')) { <article class="stat-card widget"><span class="stat-icon violet">▣</span><strong>{{ data.activeStaff | number }}</strong><small>Active Staff</small></article> }
+      @else { <article class="stat-card widget is-disabled"><span class="stat-icon violet">▣</span><strong>{{ data.activeStaff | number }}</strong><small>Active Staff</small><span class="locked">Disabled by Super Admin</span></article> }
+      @if (access.isEnabled('pending-dues')) { <article class="stat-card widget"><span class="stat-icon red">!</span><strong>{{ data.pendingDuesAmount | currency:'INR':'symbol':'1.0-0' }}</strong><small>Pending Dues · {{ data.pendingDuesCount }} records</small></article> }
+      @else { <article class="stat-card widget is-disabled"><span class="stat-icon red">!</span><strong>{{ data.pendingDuesAmount | currency:'INR':'symbol':'1.0-0' }}</strong><small>Pending Dues</small><span class="locked">Disabled by Super Admin</span></article> }
+    </div>
+
+    <div class="dashboard-grid">
+      @if (access.isEnabled('ecosystem-hub')) {
+        <article class="widget card ecosystem wide-two">
+          <header>
+            <div><h3>▦ Ecosystem Hub</h3><small><b>{{ data.modules.length }}</b> active modules — managed school services</small></div>
+            <input aria-label="Search modules" placeholder="⌕  Search modules..." [ngModel]="moduleSearch()" (ngModelChange)="moduleSearch.set($event)" />
+          </header>
+          <div class="tabs">
+            @for (category of moduleCategories(); track category) {
+              <button type="button" [class.selected]="selectedModuleCategory() === category" (click)="selectedModuleCategory.set(category)">{{ category }}</button>
+            }
+          </div>
+          <div class="module-links">
+            @for (module of visibleModules(); track module.id) {
+              <div><i>{{ module.icon || '▦' }}</i><b>{{ module.title }}</b></div>
+            } @empty {
+              <p class="empty">No modules match this filter.</p>
+            }
+          </div>
+        </article>
+      } @else { <article class="widget card ecosystem wide-two is-disabled"><header><div><h3>▦ Ecosystem Hub</h3><small>School modules and shortcuts</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+
+      @if (access.isEnabled('live-activity')) {
+        <article class="widget card">
+          <header><div><h3>Live Activity</h3><small>Recent school updates</small></div><span class="pill">All Activity</span></header>
+          <div class="activity-list">
+            @for (activity of data.activities; track activity.type + activity.sourceId) {
+              @if (activity.type === 'LEAVE') {
+                <button type="button" class="activity leave-activity" (click)="openLeaveApprovals.emit()">
+                  <i class="leave-icon">↗</i><span><b>{{ activity.title }}</b><small>{{ activity.detail }}</small></span>
+                  <small class="time">{{ activity.occurredAt | date:'short' }}</small>
+                </button>
+              } @else {
+                <div class="activity"><i>₹</i><span><b>{{ activity.title }}</b><small>{{ activity.detail }} · {{ activity.amount | currency:'INR':'symbol':'1.0-0' }}</small></span><small class="time">{{ activity.occurredAt | date:'short' }}</small></div>
+              }
+            } @empty { <p class="empty">No recent activity.</p> }
+          </div>
+        </article>
+      } @else { <article class="widget card is-disabled"><header><div><h3>Live Activity</h3><small>Recent school updates</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+
+      @if (access.isEnabled('attendance-breakdown')) {
+        <article class="widget card">
+          <header><div><h3>Today's Attendance</h3><small>Students — {{ today() | date:'MMM d' }}</small></div></header>
+          <div class="attendance-summary">
+            <div class="donut"><b>{{ data.attendancePercent }}%</b><small>Present</small></div>
+            <div class="attendance-numbers"><p>🟣 Present <b>{{ data.attendancePresent }}</b></p><p>🔴 Absent <b>{{ data.attendanceAbsent }}</b></p><p>🔵 Enrolled <b>{{ data.enrolledStudents }}</b></p></div>
+          </div>
+          <h4>CLASS-WISE BREAKDOWN</h4>
+          <div class="class-list">
+            @for (row of data.classAttendance; track row.className) { <div><b>{{ row.className }}</b><span>🟢 {{ attendancePercent(row.present, row.absent) }}%</span><span>🔴 {{ row.absent }}</span></div> }
+            @empty { <p class="empty">No attendance has been recorded today.</p> }
+          </div>
+        </article>
+      } @else { <article class="widget card is-disabled"><header><div><h3>Today's Attendance</h3><small>Student attendance</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+
+      @if (access.isEnabled('pending-fees')) {
+        <article class="widget card">
+          <header><div><h3>Pending Fee Dues</h3><small>Outstanding fee records</small></div></header>
+          <div class="due-list">
+            @for (student of data.dueStudents; track student.feeId) {
+              <div class="due-row"><i class="pink">{{ initials(student.name) }}</i><span><b>{{ student.name }}</b><small>{{ student.className }}</small></span><strong>{{ student.amount | currency:'INR':'symbol':'1.0-0' }}</strong><em>{{ student.dueDate ? (student.dueDate | date:'MMM d') : 'No due date' }}</em></div>
+            } @empty { <p class="empty">No outstanding fee records.</p> }
+          </div>
+        </article>
+      } @else { <article class="widget card is-disabled"><header><div><h3>Pending Fee Dues</h3><small>Outstanding fees</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+
+      @if (access.isEnabled('timetable')) {
+        <article class="widget card">
+          <header><div><h3>Today's Timetable</h3><small>School schedule</small></div></header>
+          <div class="timetable">
+            @for (period of data.timetable; track period.id) { <div><b>{{ period.startTime?.slice(0, 5) }}</b><span><strong>{{ period.subject }}</strong><small>{{ period.className }} · {{ period.teacherName }} · Period {{ period.period }}</small></span></div> }
+            @empty { <p class="empty">No classes are scheduled for today.</p> }
+          </div>
+        </article>
+      } @else { <article class="widget card is-disabled"><header><div><h3>Today's Timetable</h3><small>School schedule</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+
+      @if (access.isEnabled('upcoming-events')) {
+        <article class="widget card">
+          <header><div><h3>Upcoming Events</h3><small>Next scheduled school events</small></div></header>
+          <div class="notice-list">
+            @for (event of data.events; track event.title + event.eventDate) { <div><b>{{ event.title }}</b><small>{{ event.description }}</small><small>◷ &nbsp;{{ event.eventDate | date:'mediumDate' }}</small></div> }
+            @empty { <p class="empty">No upcoming events.</p> }
+          </div>
+        </article>
+      } @else { <article class="widget card is-disabled"><header><div><h3>Upcoming Events</h3><small>School calendar</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+
+      @if (access.isEnabled('transport-status')) {
+        <article class="widget card">
+          <header><div><h3>🚌 Transport Status</h3><small>Fleet overview</small></div></header>
+          <div class="transport-list">
+            @for (bus of data.buses; track bus.vehicleNumber) { <div class="bus"><i class="green">▣</i><span><b>{{ bus.vehicleNumber }}</b><small>{{ bus.route }} · {{ bus.driverName }} · {{ bus.studentCount }} students</small></span><em [class]="statusClass(bus.status)">● {{ bus.status.replace('_', ' ') }}</em></div> }
+            @empty { <p class="empty">No vehicles are registered.</p> }
+          </div>
+        </article>
+      } @else { <article class="widget card is-disabled"><header><div><h3>🚌 Transport Status</h3><small>Fleet overview</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+
+      @if (access.isEnabled('fee-overview')) {
+        <article class="widget card">
+          <header><div><h3>Fee Collection Overview</h3><small>Daily collections — last 15 days</small></div></header>
+          <div class="fee-chart">
+            <div class="chart-bars">
+              @for (day of data.feeCollections; track day.date; let index = $index) {
+                <i [style.height.%]="collectionBarHeight(day.amount)" [attr.title]="(day.date | date:'mediumDate') + ': ' + (day.amount | currency:'INR':'symbol':'1.0-0')"></i>
+              }
+            </div>
+            <div class="chart-labels">
+              @for (day of data.feeCollections; track day.date; let index = $index) {
+                @if (index % 4 === 0 || index === data.feeCollections.length - 1) { <span>{{ day.date | date:'MMM d' }}</span> }
+              }
+            </div>
+          </div>
+          <small class="legend">🟣 Collected (₹)</small>
+        </article>
+      } @else { <article class="widget card is-disabled"><header><div><h3>Fee Collection Overview</h3><small>Recent collections</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+
+      @if (access.isEnabled('announcements')) {
+        <article class="widget card">
+          <header><div><h3>📢 Announcements</h3><small>Latest notices</small></div></header>
+          <div class="notice-list">
+            @for (notice of data.announcements; track notice.title + notice.publishedAt) { <div><b>{{ notice.title }}</b><small>{{ notice.body }}</small><small>◷ &nbsp;{{ notice.publishedAt | date:'mediumDate' }}</small></div> }
+            @empty { <p class="empty">No announcements have been published.</p> }
+          </div>
+        </article>
+      } @else { <article class="widget card is-disabled"><header><div><h3>📢 Announcements</h3><small>Latest notices</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+
+      @if (access.isEnabled('upcoming-exams')) {
+        <article class="widget card">
+          <header><div><h3>▣ Upcoming Exams</h3><small>Next scheduled exams</small></div></header>
+          <div class="notice-list">
+            @for (exam of data.exams; track exam.name + exam.startDate) { <div><b>{{ exam.name }}</b><small>{{ exam.className || 'All classes' }} · {{ exam.status }}</small><small>◷ &nbsp;{{ exam.startDate | date:'mediumDate' }}</small></div> }
+            @empty { <p class="empty">No upcoming exams.</p> }
+          </div>
+        </article>
+      } @else { <article class="widget card is-disabled"><header><div><h3>▣ Upcoming Exams</h3><small>Scheduled assessments</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+
+      @if (access.isEnabled('admissions')) {
+        <article class="widget card">
+          <header><div><h3>♟ Admissions</h3><small>Enquiry summary</small></div></header>
+          <div class="admission-grid"><div><b>{{ data.admittedEnquiries }}</b><small>Admitted</small></div><div><b>{{ data.pendingAdmissions }}</b><small>Pending</small></div><div><b>{{ data.interestedAdmissions }}</b><small>Interested</small></div><div><b>{{ data.rejectedAdmissions }}</b><small>Rejected</small></div></div>
+          <div class="capacity"><span>Seat Capacity · {{ data.totalStudents }} / {{ data.seatCapacity || 'Not set' }}</span><b>{{ data.occupiedSeatsPercent }}%</b><i><b [style.width.%]="data.occupiedSeatsPercent"></b></i></div>
+        </article>
+      } @else { <article class="widget card is-disabled"><header><div><h3>♟ Admissions</h3><small>Enquiry summary</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+
+      @if (access.isEnabled('birthdays-library')) {
+        <article class="widget card">
+          <header><div><h3>🎂 Today's Birthdays</h3><small>Students & Staff</small></div></header>
+          <div class="birthday-list">
+            @for (person of data.birthdays; track person.role + person.personId) { <div><i>🎂</i><span><b>{{ person.name }}</b><small>{{ person.detail }} · {{ person.role }}</small></span><strong>Turns {{ person.age }}</strong></div> }
+            @empty { <p class="empty">No birthdays today.</p> }
+          </div>
+          <h4>▤ Library Today</h4>
+          <div class="library-stats"><span><b>{{ data.libraryIssuedToday }}</b><small>Issued</small></span><span><b>{{ data.libraryReturnedToday }}</b><small>Returned</small></span><span><b>{{ data.libraryOverdue }}</b><small>Overdue</small></span></div>
+        </article>
+      } @else { <article class="widget card is-disabled"><header><div><h3>🎂 Today's Birthdays & Library</h3><small>Students, staff and books</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+
+      @if (access.isEnabled('staff-snapshot')) {
+        <article class="widget card">
+          <header><div><h3>♟ Staff Snapshot</h3><small>Attendance today</small></div></header>
+          <div class="staff-totals"><span><b>{{ data.activeStaff }}</b><small>Total Staff</small></span><span><b>{{ data.staffPresent }}</b><small>Present</small></span><span><b>{{ data.staffAway }}</b><small>Away</small></span></div>
+          <div class="progress"><i [style.width.%]="data.activeStaff ? data.staffPresent * 100 / data.activeStaff : 0"></i></div>
+          <div class="staff-list">
+            @for (member of data.staff; track member.teacherId) { <div><i class="blue">{{ initials(member.name) }}</i><span><b>{{ member.name }}</b><small>{{ member.title }}</small></span><em>{{ member.status }}</em></div> }
+            @empty { <p class="empty">No active staff records.</p> }
+          </div>
+        </article>
+      } @else { <article class="widget card is-disabled"><header><div><h3>♟ Staff Snapshot</h3><small>Staff attendance</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+
+      @if (access.isEnabled('setup-status')) {
+        <article class="widget card">
+          <header><div><h3>☑ Setup Status</h3><small>School configuration</small></div></header>
+          <div class="setup-list">
+            @for (step of data.setupSteps; track step.key) { <div><i [class.incomplete]="!step.complete">{{ step.complete ? '✓' : '○' }}</i><b>{{ step.label }}</b><em [class.incomplete]="!step.complete">{{ step.complete ? 'Done' : 'Pending' }}</em></div> }
+            @empty { <p class="empty">No setup checklist has been configured.</p> }
+          </div>
+        </article>
+      } @else { <article class="widget card is-disabled"><header><div><h3>☑ Setup Status</h3><small>School configuration</small></div></header><span class="locked">Disabled by Super Admin</span></article> }
+    </div>
+  }
+</div>

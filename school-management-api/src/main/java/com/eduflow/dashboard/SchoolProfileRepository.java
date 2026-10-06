@@ -2,4 +2,6 @@ package com.eduflow.dashboard;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SchoolProfileRepository extends JpaRepository<SchoolProfile, Long> {}
+public interface SchoolProfileRepository extends JpaRepository<SchoolProfile, Long> {
+    java.util.Optional<SchoolProfile> findFirstByOrderByIdAsc();
+}

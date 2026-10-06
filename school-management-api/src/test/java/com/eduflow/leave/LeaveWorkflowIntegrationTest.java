@@ -1,22 +1,17 @@
 package com.eduflow.leave;
 
-import com.eduflow.auth.UserAccountService;
-import com.eduflow.teacher.Teacher;
-import com.eduflow.teacher.TeacherRepository;
-import com.eduflow.auth.UserAccountRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.Cookie;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -30,82 +25,86 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.url=jdbc:h2:mem:leave-workflow;MODE=MySQL;DB_CLOSE_DELAY=-1",
         "spring.datasource.driver-class-name=org.h2.Driver",
         "spring.datasource.username=sa",
-        "spring.datasource.password=",
         "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
         "spring.jpa.hibernate.ddl-auto=create-drop",
-        "app.bootstrap-admin.username=",
-        "app.bootstrap-admin.password="
+        "app.security.jwt.secret=VGhpc0lzQVN1aXRhYmxlQmFzZTY0S2V5Rm9ySm9zZUdva25IUzI1NlNpZ25pbmc=",
+        "app.bootstrap-super-admin.username=platform@example.com",
+        "app.bootstrap-super-admin.password=Super-Admin-Password-123"
 })
 class LeaveWorkflowIntegrationTest {
-
-    private static final String ADMIN_PASSWORD = "Admin-Password-123";
+    private static final String SUPER_ADMIN_PASSWORD = "Super-Admin-Password-123";
+    private static final String ADMIN_PASSWORD = "School-Admin-Password-123";
     private static final String TEACHER_PASSWORD = "Teacher-Password-123";
 
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
-    @Autowired private UserAccountService accountService;
-    @Autowired private UserAccountRepository accounts;
-    @Autowired private TeacherRepository teachers;
-    @Autowired private LeaveApplicationRepository leaves;
-
-    @BeforeEach
-    void clearAccountsAndRequests() {
-        leaves.deleteAll();
-        accounts.deleteAll();
-        teachers.deleteAll();
-    }
 
     @Test
-    void teacherSubmitsAndAdminApprovesLeaveWithRoleAndCsrfChecks() throws Exception {
-        accountService.createInitialAdmin("admin@example.com", ADMIN_PASSWORD);
-        Teacher teacher = new Teacher();
-        teacher.employeeId = "T-" + System.nanoTime();
-        teacher.name = "Priya Sharma";
-        teacher.email = "priya-" + System.nanoTime() + "@example.com";
-        teacher = teachers.saveAndFlush(teacher);
-        accountService.createTeacherAccount(teacher.id, teacher.email, TEACHER_PASSWORD);
+    void teacherSubmitsAndAdminApprovesLeaveWithinSchool() throws Exception {
+        String suffix = Integer.toHexString(ThreadLocalRandom.current().nextInt(0x100000, 0xFFFFFF));
+        String schoolAdminEmail = "admin-" + suffix + "@example.com";
+        String teacherEmail = "teacher-" + suffix + "@example.com";
+        String superAdminToken = signIn("platform@example.com", SUPER_ADMIN_PASSWORD);
 
-        MockHttpSession teacherSession = signIn(teacher.email, TEACHER_PASSWORD);
-        MockHttpSession adminSession = signIn("admin@example.com", ADMIN_PASSWORD);
+        MvcResult schoolResult = mockMvc.perform(post("/api/v1/super-admin/schools")
+                        .header("Authorization", bearer(superAdminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new CreateSchool(
+                                "Test School " + suffix, "S" + suffix.toUpperCase(), "Test City",
+                                "Test Admin", schoolAdminEmail, ADMIN_PASSWORD))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.adminCustomId").exists())
+                .andReturn();
+        String adminCustomId = objectMapper.readTree(schoolResult.getResponse().getContentAsString())
+                .get("adminCustomId").asText();
+        String adminToken = signIn(adminCustomId, ADMIN_PASSWORD);
 
-        mockMvc.perform(get("/api/leaves/admin").session(teacherSession))
+        MvcResult memberResult = mockMvc.perform(post("/api/v1/admin/members")
+                        .header("Authorization", bearer(adminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new CreateMember(
+                                "Priya Sharma", teacherEmail, TEACHER_PASSWORD,
+                                "TEACHER", "555-0123", "Mathematics", "Class X-A"))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.customId").value("S" + suffix.toUpperCase() + "-TCH-1001"))
+                .andReturn();
+        String teacherCustomId = objectMapper.readTree(memberResult.getResponse().getContentAsString())
+                .get("customId").asText();
+        String teacherToken = signIn(teacherCustomId, TEACHER_PASSWORD);
+
+        mockMvc.perform(get("/api/leaves/admin")
+                        .header("Authorization", bearer(teacherToken)))
                 .andExpect(status().isForbidden());
 
-        Csrf csrf = csrfFor(teacherSession);
-        String requestBody = objectMapper.writeValueAsString(new LeaveService.CreateLeaveRequest(
-                LeaveApplication.LeaveType.SICK,
-                java.time.LocalDate.parse("2026-11-02"),
-                java.time.LocalDate.parse("2026-11-03"),
-                "Medical appointment"));
-        MvcResult submission = mockMvc.perform(post("/api/leaves")
-                        .session(teacherSession)
-                        .cookie(csrf.cookie())
-                        .header("X-XSRF-TOKEN", csrf.token())
+        MvcResult submitted = mockMvc.perform(post("/api/leaves")
+                        .header("Authorization", bearer(teacherToken))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+                        .content("""
+                                {"type":"SICK","startDate":"2026-11-02","endDate":"2026-11-03",
+                                 "reason":"Medical appointment"}
+                                """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status", is("PENDING")))
                 .andExpect(jsonPath("$.days", is(2)))
                 .andReturn();
-        long leaveId = objectMapper.readTree(submission.getResponse().getContentAsString())
+        long leaveId = objectMapper.readTree(submitted.getResponse().getContentAsString())
                 .get("id").asLong();
 
-        mockMvc.perform(get("/api/leaves/admin").session(adminSession))
+        mockMvc.perform(get("/api/leaves/admin")
+                        .header("Authorization", bearer(adminToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].teacherName", is("Priya Sharma")));
 
-        Csrf adminCsrf = csrfFor(adminSession);
         mockMvc.perform(post("/api/leaves/{id}/approve", leaveId)
-                        .session(adminSession)
-                        .cookie(adminCsrf.cookie())
-                        .header("X-XSRF-TOKEN", adminCsrf.token())
+                        .header("Authorization", bearer(adminToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"note\":\"Coverage arranged\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is("APPROVED")))
-                .andExpect(jsonPath("$.reviewedBy", is("admin@example.com")));
+                .andExpect(jsonPath("$.reviewedBy", is(adminCustomId)));
 
-        mockMvc.perform(get("/api/leaves/mine").session(teacherSession))
+        mockMvc.perform(get("/api/leaves/mine")
+                        .header("Authorization", bearer(teacherToken)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].status", is("APPROVED")))
                 .andExpect(jsonPath("$[0].reviewNote", is("Coverage arranged")));
@@ -117,31 +116,112 @@ class LeaveWorkflowIntegrationTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    private MockHttpSession signIn(String username, String password) throws Exception {
-        Csrf csrf = csrfFor(null);
-        MvcResult result = mockMvc.perform(post("/api/auth/login")
-                        .cookie(csrf.cookie())
-                        .header("X-XSRF-TOKEN", csrf.token())
+    @Test
+    void tenantAdminsCannotListOrReadAnotherSchoolsTeacher() throws Exception {
+        String suffix = Integer.toHexString(ThreadLocalRandom.current().nextInt(0x100000, 0xFFFFFF));
+        String superAdminToken = signIn("platform@example.com", SUPER_ADMIN_PASSWORD);
+        String adminOne = createSchool(superAdminToken, "A" + suffix, "one-" + suffix + "@example.com");
+        String adminTwo = createSchool(superAdminToken, "B" + suffix, "two-" + suffix + "@example.com");
+        String adminOneToken = signIn(adminOne, ADMIN_PASSWORD);
+        JsonNode adminTwoLogin = login(adminTwo, ADMIN_PASSWORD);
+        String adminTwoToken = adminTwoLogin.get("accessToken").asText();
+        long schoolTwoId = adminTwoLogin.get("schoolId").asLong();
+
+        mockMvc.perform(post("/api/v1/admin/members")
+                        .header("Authorization", bearer(adminTwoToken))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new LoginRequest(username, password))))
-                .andExpect(status().isOk())
+                        .content(objectMapper.writeValueAsString(new CreateMember(
+                                "Another School Teacher", "teacher-" + suffix + "@example.com",
+                                TEACHER_PASSWORD, "TEACHER", "555-0100", "Science", "Class IX"))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.customId").value("B" + suffix.toUpperCase() + "-TCH-1001"));
+
+        MvcResult studentResponse = mockMvc.perform(post("/api/v1/admin/members")
+                        .header("Authorization", bearer(adminTwoToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new CreateMember(
+                                "School Two Student", "student-" + suffix + "@example.com",
+                                TEACHER_PASSWORD, "STUDENT", "555-0101", "", "Class VII"))))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.customId").value("B" + suffix.toUpperCase() + "-STD-2001"))
                 .andReturn();
-        return (MockHttpSession) result.getRequest().getSession(false);
+
+        mockMvc.perform(get("/api/teachers").header("Authorization", bearer(adminOneToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+        MvcResult teachersResult = mockMvc.perform(get("/api/teachers")
+                        .header("Authorization", bearer(adminTwoToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].employeeId")
+                        .value("B" + suffix.toUpperCase() + "-TCH-1001"))
+                .andReturn();
+        long otherSchoolTeacherId = objectMapper.readTree(teachersResult.getResponse().getContentAsString())
+                .get(0).get("id").asLong();
+        mockMvc.perform(get("/api/teachers/{id}", otherSchoolTeacherId)
+                        .header("Authorization", bearer(adminOneToken)))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/students").header("Authorization", bearer(adminOneToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+        mockMvc.perform(get("/api/students").header("Authorization", bearer(adminTwoToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].admissionNo")
+                        .value("B" + suffix.toUpperCase() + "-STD-2001"));
+
+        String studentCustomId = objectMapper.readTree(studentResponse.getResponse().getContentAsString())
+                .get("customId").asText();
+        JsonNode studentLogin = login(studentCustomId, TEACHER_PASSWORD);
+        String studentToken = studentLogin.get("accessToken").asText();
+        org.assertj.core.api.Assertions.assertThat(studentLogin.get("role").asText()).isEqualTo("STUDENT");
+        org.assertj.core.api.Assertions.assertThat(studentLogin.get("schoolId").asLong()).isEqualTo(schoolTwoId);
+        mockMvc.perform(get("/api/v1/auth/me").header("Authorization", bearer(studentToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customId").value(studentCustomId))
+                .andExpect(jsonPath("$.role").value("STUDENT"))
+                .andExpect(jsonPath("$.schoolId").value(schoolTwoId));
+        mockMvc.perform(get("/api/students").header("Authorization", bearer(studentToken)))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/api/v1/super-admin/schools").header("Authorization", bearer(adminOneToken)))
+                .andExpect(status().isForbidden());
     }
 
-    private Csrf csrfFor(MockHttpSession session) throws Exception {
-        MockHttpServletRequestBuilder request = get("/api/auth/csrf");
-        if (session != null) {
-            request.session(session);
+    private String createSchool(String superAdminToken, String code, String adminEmail) throws Exception {
+        MvcResult response = mockMvc.perform(post("/api/v1/super-admin/schools")
+                        .header("Authorization", bearer(superAdminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new CreateSchool(
+                                "School " + code, code, "Test City", "School Admin",
+                                adminEmail, ADMIN_PASSWORD))))
+                .andExpect(status().isCreated())
+                .andReturn();
+        return objectMapper.readTree(response.getResponse().getContentAsString())
+                .get("adminCustomId").asText();
+    }
+
+    private String signIn(String identifier, String password) throws Exception {
+        return login(identifier, password).get("accessToken").asText();
+    }
+
+    private JsonNode login(String identifier, String password) throws Exception {
+        MvcResult result = mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new LoginRequest(identifier, password))))
+                .andReturn();
+        if (result.getResponse().getStatus() != 200) {
+            throw new AssertionError("Login failed: " + result.getResponse().getStatus() + " "
+                    + result.getResponse().getContentAsString());
         }
-        MvcResult result = mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andReturn();
-        String token = objectMapper.readTree(result.getResponse().getContentAsString())
-                .get("token").asText();
-        return new Csrf(token, new Cookie("XSRF-TOKEN", token));
+        return objectMapper.readTree(result.getResponse().getContentAsString());
     }
 
-    private record LoginRequest(String username, String password) {}
-    private record Csrf(String token, Cookie cookie) {}
+    private static String bearer(String token) {
+        return "Bearer " + token;
+    }
+
+    private record LoginRequest(String identifier, String password) {}
+    private record CreateSchool(String schoolName, String schoolCode, String city,
+                                String adminName, String adminEmail, String adminPassword) {}
+    private record CreateMember(String name, String email, String password, String role,
+                                String phone, String subject, String className) {}
 }

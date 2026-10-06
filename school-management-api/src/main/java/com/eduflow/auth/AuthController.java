@@ -1,82 +1,75 @@
 package com.eduflow.auth;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
-@CrossOrigin(origins = {"http://localhost:4200", "http://127.0.0.1:4200"}, allowCredentials = "true")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
-
     private final AuthenticationManager authenticationManager;
-    private final SecurityContextRepository securityContextRepository;
-    private final CsrfTokenRepository csrfTokenRepository;
-    private final SessionAuthenticationStrategy sessionAuthenticationStrategy;
+    private final JwtTokenService tokens;
 
-    public AuthController(
-            AuthenticationManager authenticationManager,
-            SecurityContextRepository securityContextRepository,
-            CsrfTokenRepository csrfTokenRepository,
-            SessionAuthenticationStrategy sessionAuthenticationStrategy) {
+    public AuthController(AuthenticationManager authenticationManager, JwtTokenService tokens) {
         this.authenticationManager = authenticationManager;
-        this.securityContextRepository = securityContextRepository;
-        this.csrfTokenRepository = csrfTokenRepository;
-        this.sessionAuthenticationStrategy = sessionAuthenticationStrategy;
-    }
-
-    @GetMapping("/csrf")
-    public CsrfResponse csrf(CsrfToken csrfToken) {
-        return new CsrfResponse(csrfToken.getToken(), csrfToken.getHeaderName());
+        this.tokens = tokens;
     }
 
     @PostMapping("/login")
-    public UserAccountService.AccountResponse login(
-            @Valid @RequestBody LoginRequest body,
-            HttpServletRequest request,
-            HttpServletResponse response) {
+    public AuthResponse login(@Valid @RequestBody LoginRequest body) {
         Authentication authentication = authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken.unauthenticated(body.username(), body.password()));
-        sessionAuthenticationStrategy.onAuthentication(authentication, request, response);
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authentication);
-        SecurityContextHolder.setContext(context);
-        securityContextRepository.saveContext(context, request, response);
-        csrfTokenRepository.saveToken(null, request, response);
-
+                UsernamePasswordAuthenticationToken.unauthenticated(body.identifier(), body.password()));
         AccountPrincipal principal = (AccountPrincipal) authentication.getPrincipal();
-        return UserAccountService.toResponse(principal.account());
+        UserAccount account = principal.account();
+        JwtTokenService.IssuedToken token = tokens.issue(account);
+        return new AuthResponse(
+                token.value(), token.expiresIn(), account.getId(), account.getCustomId(),
+                account.getRole(), principal.schoolId(),
+                account.getSchool() == null ? null : account.getSchool().getName(),
+                account.getTeacher() == null ? null : account.getTeacher().getId(),
+                account.getTeacher() == null ? null : account.getTeacher().getName());
     }
 
     @GetMapping("/me")
-    public UserAccountService.AccountResponse currentUser(@AuthenticationPrincipal AccountPrincipal principal) {
-        return UserAccountService.toResponse(principal.account());
+    public AuthResponse currentUser(Authentication authentication) {
+        if (!(authentication instanceof JwtAuthenticationToken jwtAuthentication)) {
+            throw new IllegalStateException("The authenticated request does not contain a JWT.");
+        }
+        Jwt jwt = jwtAuthentication.getToken();
+        return new AuthResponse(
+                null,
+                jwt.getExpiresAt() == null ? 0 : Math.max(0, jwt.getExpiresAt().getEpochSecond()
+                        - java.time.Instant.now().getEpochSecond()),
+                jwt.getClaim("userId"),
+                jwt.getClaim("customId"),
+                UserAccount.Role.valueOf(jwt.getClaimAsString("role")),
+                jwt.getClaim("schoolId"),
+                jwt.getClaimAsString("schoolName"),
+                null,
+                null);
     }
 
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void logout(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Authentication authentication) {
-        new SecurityContextLogoutHandler().logout(request, response, authentication);
-        csrfTokenRepository.saveToken(null, request, response);
-    }
+    public void logout() {}
 
-    public record LoginRequest(@NotBlank String username, @NotBlank String password) {}
-    public record CsrfResponse(String token, String headerName) {}
+    public record LoginRequest(@NotBlank String identifier, @NotBlank String password) {}
+
+    public record AuthResponse(
+            String accessToken,
+            long expiresIn,
+            Long userId,
+            String customId,
+            UserAccount.Role role,
+            Long schoolId,
+            String schoolName,
+            Long teacherId,
+            String teacherName) {}
 }

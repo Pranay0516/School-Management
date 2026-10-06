@@ -30,6 +30,9 @@ public class FeeService {
         if (fee.paymentStatus == null) {
             fee.paymentStatus = Fee.PaymentStatus.PENDING;
         }
+        if (fee.paymentStatus == Fee.PaymentStatus.PAID && fee.paymentDate == null) {
+            fee.paymentDate = LocalDate.now();
+        }
         return repo.save(fee);
     }
 
@@ -41,6 +44,13 @@ public class FeeService {
         existing.amount        = incoming.amount;
         existing.dueDate       = incoming.dueDate;
         existing.paymentStatus = incoming.paymentStatus;
+        if (incoming.paymentStatus == Fee.PaymentStatus.PAID) {
+            existing.paymentDate = incoming.paymentDate != null
+                    ? incoming.paymentDate
+                    : existing.paymentDate != null ? existing.paymentDate : LocalDate.now();
+        } else {
+            existing.paymentDate = null;
+        }
         return repo.save(existing);
     }
 

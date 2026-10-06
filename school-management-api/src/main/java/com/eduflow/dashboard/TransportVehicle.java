@@ -1,5 +1,6 @@
 package com.eduflow.dashboard;
 
+import com.eduflow.tenant.SchoolScopedEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -7,10 +8,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.Filter;
 
 @Entity
 @Table(name = "transport_vehicles")
-public class TransportVehicle {
+@Filter(name = "schoolScope", condition = "school_id = :schoolId")
+public class TransportVehicle extends SchoolScopedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;

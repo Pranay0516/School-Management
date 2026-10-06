@@ -1,10 +1,15 @@
-package com.eduflow.fee; import jakarta.persistence.*;
+package com.eduflow.fee;
+
+import com.eduflow.tenant.SchoolScopedEntity;
+import jakarta.persistence.*;
+import org.hibernate.annotations.Filter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "fees")
-public class Fee {
+@Filter(name = "schoolScope", condition = "school_id = :schoolId")
+public class Fee extends SchoolScopedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;

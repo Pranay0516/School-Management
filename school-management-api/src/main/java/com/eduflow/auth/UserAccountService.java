@@ -2,6 +2,7 @@ package com.eduflow.auth;
 
 import com.eduflow.teacher.Teacher;
 import com.eduflow.teacher.TeacherRepository;
+import com.eduflow.tenant.TenantContext;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -27,12 +28,12 @@ public class UserAccountService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserAccount createInitialAdmin(String username, String rawPassword) {
+    public UserAccount createInitialSuperAdmin(String username, String rawPassword) {
+        String normalized = normalizeUsername(username);
         return accounts.save(new UserAccount(
-                normalizeUsername(username),
+                normalized, normalized, normalized,
                 passwordEncoder.encode(validatePassword(rawPassword)),
-                UserAccount.Role.ADMIN,
-                null));
+                UserAccount.Role.SUPER_ADMIN, normalized, null, null, null));
     }
 
     public AccountResponse createTeacherAccount(Long teacherId, String username, String rawPassword) {
@@ -45,6 +46,11 @@ public class UserAccountService {
             throw new IllegalArgumentException("This teacher already has a login account.");
         }
 
+        Long schoolId = TenantContext.requireSchoolId();
+        if (!schoolId.equals(teacher.getSchoolId())) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Cross-school data access is not allowed.");
+        }
         UserAccount account = createAccount(
                 username, rawPassword, UserAccount.Role.TEACHER, teacher);
         return toResponse(account);
@@ -64,10 +70,12 @@ public class UserAccountService {
             throw new IllegalArgumentException("That username is already in use.");
         }
         return accounts.save(new UserAccount(
+                teacher.getEmployeeId(),
+                teacher.getEmployeeId(),
                 normalizedUsername,
                 passwordEncoder.encode(validatePassword(rawPassword)),
-                role,
-                teacher));
+                role, teacher.getName(), teacher.getSchool(),
+                teacher, null));
     }
 
     private static String normalizeUsername(String username) {

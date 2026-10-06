@@ -13,6 +13,7 @@ public record AdminDashboardResponse(
         long totalStudents,
         BigDecimal collectedThisMonth,
         BigDecimal collectionGrowthPercent,
+        String academicYear,
         int attendancePercent,
         long attendancePresent,
         long attendanceAbsent,
@@ -44,15 +45,16 @@ public record AdminDashboardResponse(
         List<StaffItem> staff,
         List<SetupItem> setupSteps) {
 
-    public record ModuleItem(String title, String icon, String category, String route) {}
+    public record ModuleItem(Long id, String title, String icon, String category, String route) {}
 
-    public record ActivityItem(String type, String title, String detail, LocalDateTime occurredAt) {}
+    public record ActivityItem(
+            Long sourceId, String type, String title, String detail, BigDecimal amount, LocalDateTime occurredAt) {}
 
     public record ClassAttendanceItem(String className, long present, long absent) {}
 
-    public record FeeDueItem(Long studentId, String name, String className, BigDecimal amount, LocalDate dueDate) {}
+    public record FeeDueItem(Long feeId, Long studentId, String name, String className, BigDecimal amount, LocalDate dueDate) {}
 
-    public record TimetableItem(int period, LocalTime startTime, String subject, String teacherName) {}
+    public record TimetableItem(Long id, int period, LocalTime startTime, String className, String subject, String teacherName) {}
 
     public record EventItem(String title, String description, LocalDate eventDate) {}
 
@@ -64,9 +66,9 @@ public record AdminDashboardResponse(
 
     public record ExamItem(String name, String className, LocalDate startDate, String status) {}
 
-    public record BirthdayItem(String name, String detail, int age, String role) {}
+    public record BirthdayItem(Long personId, String name, String detail, int age, String role) {}
 
-    public record StaffItem(String name, String title, String status) {}
+    public record StaffItem(Long teacherId, String name, String title, String status) {}
 
     public record SetupItem(String key, String label, boolean complete) {}
 }

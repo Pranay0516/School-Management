@@ -1,91 +1,92 @@
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output, computed, inject, signal } from '@angular/core';
-import { forkJoin } from 'rxjs';
-import { ApiService } from '../../core/api.service';
+import { FormsModule } from '@angular/forms';
+import { AdminDashboardData, ApiService } from '../../core/api.service';
 import { DashboardAccessService } from '../../core/dashboard-access.service';
-import { LeaveNotificationService } from '../../core/leave-notification.service';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [DatePipe],
+  imports: [CurrencyPipe, DatePipe, DecimalPipe, FormsModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss',
 })
 export class AdminDashboardComponent implements OnInit {
   readonly access = inject(DashboardAccessService);
-  readonly leaveNotifications = inject(LeaveNotificationService);
-  private api = inject(ApiService);
+  private readonly api = inject(ApiService);
   @Output() readonly openLeaveApprovals = new EventEmitter<void>();
 
-  studentCount = signal('–');
-  teacherCount = signal('–');
-  pendingFees  = signal('–');
-  readonly leaveActivities = computed(() => this.leaveNotifications.recentApplications());
-
-  modules = [
-    { name: 'Students', icon: '♟', color: 'blue' }, { name: 'Fees', icon: '₹', color: 'green' },
-    { name: 'Exams', icon: '▤', color: 'orange' }, { name: 'Transport', icon: '◎', color: 'blue' },
-    { name: 'Notices', icon: '▣', color: 'orange' },
-  ];
-  activities = [
-    { name: 'Ishaan Patel paid ₹5,000 fee', when: '12h ago' },
-    { name: 'Chhavi Desai paid ₹5,000 fee', when: '1d ago' },
-    { name: 'Ali Bose paid ₹4,000 fee', when: '1d ago' },
-  ];
-  classAttendance = [{ name: 'Nursery', absent: 37 }, { name: 'Class I', absent: 24 }, { name: 'Class II', absent: 22 }, { name: 'Class V', absent: 21 }, { name: 'Class III', absent: 20 }];
-  dueStudents = [
-    { name: 'Ali Bansal', className: 'Class VIA', initials: 'AB', color: 'pink' },
-    { name: 'Eva Jain', className: 'Class VIA', initials: 'EJ', color: 'amber' },
-    { name: 'Omar Chouhan', className: 'Class VIA', initials: 'OC', color: 'teal' },
-    { name: 'Fatima Tiwari', className: 'Class V', initials: 'FT', color: 'violet-bg' },
-    { name: 'Daksh Tiwari', className: 'Nursery A', initials: 'DT', color: 'blue-bg' },
-    { name: 'Dev Rajput', className: 'Nursery A', initials: 'DR', color: 'pink' },
-    { name: 'Nandini Garg', className: 'Class X A', initials: 'NG', color: 'amber' },
-  ];
-  timetable = [
-    { time: '10:00', subject: 'English', teacher: 'Amit Sharma' }, { time: '11:00', subject: 'English', teacher: 'Amit Sharma' },
-    { time: '13:00', subject: 'English', teacher: 'Amit Sharma' }, { time: '14:00', subject: 'English', teacher: 'Amit Sharma' },
-  ];
-  buses = [
-    { number: 'CG04HD7250', route: 'Raipur — 2 students', state: 'On Trip', stateClass: 'online', color: 'green' },
-    { number: 'CG04AB1234', route: 'Route A — Shankar Nagar · AJ — 7 students', state: 'Idle', stateClass: 'idle', color: 'amber' },
-    { number: 'CG04CD5678', route: 'Suresh Yadav', state: 'Idle', stateClass: 'idle', color: 'blue-bg' },
-    { number: 'CG04EF9012', route: 'Route C — Devendra Nagar — 4 students', state: 'Offline', stateClass: 'offline', color: 'pink' },
-  ];
-  feeBars = [7, 8, 8, 9, 10, 12, 11, 14, 16, 13, 17, 15, 24, 18, 100];
-  announcements = [
-    { title: 'hlo', body: 'Xnhc' }, { title: 'holiday', body: 'Enjoy your day' },
-    { title: 'Tomorrow is TUESDAY....', body: 'Tomorrow is TUESDAY...Tomorrow is TUESDAY...Tomorrow is TUESDAY...' },
-  ];
-  birthdays = [
-    { name: 'Reyansh Bose', detail: 'Nursery B — Turns 5', icon: '🎂' }, { name: 'Ali Bose', detail: 'Class V A — Turns 11', icon: '🎂' },
-    { name: 'Dhruv Bose', detail: 'Class VII — Turns 14', icon: '🎂' }, { name: 'Reyansh Bose', detail: 'Class X A — Turns 16', icon: '🎂' },
-  ];
-  staff = [
-    { name: 'Amit Sharma', title: 'Senior Teacher', initials: 'AS', color: 'blue' }, { name: 'Rajesh Kumar', title: 'Staff', initials: 'RK', color: 'purple' },
-    { name: 'Vikram Singh', title: 'Staff', initials: 'VS', color: 'teal' }, { name: 'Sneha Desai', title: 'Staff', initials: 'SD', color: 'amber' },
-    { name: 'Accountant1', title: 'HOD', initials: 'A', color: 'pink' },
-  ];
-  setupSteps = ['Academic Session', 'Classes & Sections', 'Subjects', 'Fees Assigned'];
+  readonly dashboard = signal<AdminDashboardData | null>(null);
+  readonly loading = signal(true);
+  readonly error = signal('');
+  readonly selectedModuleCategory = signal('All');
+  readonly moduleSearch = signal('');
+  readonly today = computed(() => {
+    const value = this.dashboard()?.today;
+    if (!value) return null;
+    const [year, month, day] = value.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  });
+  readonly greeting = computed(() => {
+    const hour = new Date().getHours();
+    return hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
+  });
+  readonly moduleCategories = computed(() => [
+    'All',
+    ...new Set((this.dashboard()?.modules ?? [])
+      .map(module => module.category?.trim())
+      .filter((category): category is string => Boolean(category))),
+  ]);
+  readonly visibleModules = computed(() => {
+    const category = this.selectedModuleCategory();
+    const search = this.moduleSearch().trim().toLowerCase();
+    return (this.dashboard()?.modules ?? []).filter(module =>
+      (category === 'All' || module.category === category)
+      && (!search || module.title.toLowerCase().includes(search)),
+    );
+  });
+  readonly maxFeeCollection = computed(() =>
+    Math.max(...(this.dashboard()?.feeCollections ?? []).map(day => day.amount), 0),
+  );
 
   ngOnInit() {
-    forkJoin({
-      students: this.api.studentStats(),
-      teachers: this.api.teacherStats(),
-      fees:     this.api.feeStats(),
-    }).subscribe({
-      next: ({ students, teachers, fees }) => {
-        this.studentCount.set(students.totalActive.toLocaleString());
-        this.teacherCount.set(teachers.totalActive.toLocaleString());
-        this.pendingFees.set(String(fees.pendingCount));
+    this.load();
+  }
+
+  load() {
+    this.loading.set(true);
+    this.error.set('');
+    this.api.adminDashboard().subscribe({
+      next: data => {
+        this.dashboard.set(data);
+        this.loading.set(false);
       },
-      error: () => {
-        // keep placeholders if API is down
-        this.studentCount.set('1,248');
-        this.teacherCount.set('64');
-        this.pendingFees.set('12');
+      error: error => {
+        this.error.set(error instanceof Error ? error.message : 'Unable to load dashboard data.');
+        this.loading.set(false);
       },
     });
+  }
+
+  collectionBarHeight(amount: number): number {
+    const maximum = this.maxFeeCollection();
+    return maximum === 0 ? 0 : amount / maximum * 100;
+  }
+
+  attendancePercent(present: number, absent: number): number {
+    const total = present + absent;
+    return total === 0 ? 0 : Math.round(present * 100 / total);
+  }
+
+  statusClass(status: string): string {
+    switch (status) {
+      case 'ON_TRIP': return 'online';
+      case 'OFFLINE': return 'offline';
+      default: return 'idle';
+    }
+  }
+
+  initials(name: string): string {
+    return name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0].toUpperCase()).join('');
   }
 }

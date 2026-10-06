@@ -6,6 +6,7 @@ import { LeaveNotificationService } from './core/leave-notification.service';
 
 import { AdminDashboardComponent }   from './features/admin/admin-dashboard.component';
 import { LeaveApprovalsComponent } from './features/admin/leave-approvals.component';
+import { SchoolMembersComponent } from './features/admin/school-members.component';
 import { TeacherDashboardComponent } from './features/teacher/teacher-dashboard.component';
 import { StudentDashboardComponent } from './features/student/student-dashboard.component';
 import { StudentListComponent }      from './features/students/student-list.component';
@@ -27,6 +28,7 @@ const ALL_MENUS: NavMenu[] = [
   { title: 'Dashboard',       icon: 'dashboard', roles: ['ADMIN','TEACHER','STUDENT','PARENT'] },
   { title: 'Students',        icon: 'students',  roles: ['ADMIN','TEACHER'] },
   { title: 'Teachers',        icon: 'teachers',  roles: ['ADMIN'] },
+  { title: 'Members',         icon: 'students',  roles: ['ADMIN'] },
   { title: 'Attendance',      icon: 'attendance',roles: ['ADMIN','TEACHER','STUDENT','PARENT'] },
   { title: 'Examinations',    icon: 'exams',     roles: ['ADMIN','TEACHER','STUDENT','PARENT'] },
   { title: 'Question Papers', icon: 'papers',    roles: ['ADMIN','TEACHER'] },
@@ -41,6 +43,7 @@ const ALL_MENUS: NavMenu[] = [
   imports: [
     FormsModule, TitleCasePipe,
     AdminDashboardComponent, TeacherDashboardComponent, StudentDashboardComponent,
+    SchoolMembersComponent,
     StudentListComponent, TeacherListComponent,
     AttendanceComponent, ExaminationsComponent, ExamPapersComponent,
     FeesComponent, MenuManagementComponent, LeaveApprovalsComponent,
@@ -66,7 +69,6 @@ export class App implements OnDestroy, OnInit {
   activeModule     = signal<'selector' | ModuleId>('selector');
 
   login         = { username: '', password: '' };
-  keepSignedIn  = false;
 
   get visibleMenus(): NavMenu[] { return ALL_MENUS.filter(m => m.roles.includes(this.role())); }
 
@@ -74,6 +76,13 @@ export class App implements OnDestroy, OnInit {
     const u = this.login.username;
     if (!u) return this.role().slice(0, 2).toUpperCase();
     return u.split(/[\s@.]+/).slice(0, 2).map(w => w[0]?.toUpperCase()).join('');
+  });
+  academicYear = computed(() => {
+    const currentDate = new Date();
+    const startYear = currentDate.getMonth() >= 3
+      ? currentDate.getFullYear()
+      : currentDate.getFullYear() - 1;
+    return `${startYear}-${String(startYear + 1).slice(-2)}`;
   });
 
   toggleTheme() { this.theme.set(this.theme() === 'theme-1' ? 'theme-2' : 'theme-1'); }

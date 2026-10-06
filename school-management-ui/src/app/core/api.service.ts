@@ -86,6 +86,53 @@ export interface TeacherAccount {
   teacherName: string;
 }
 
+export interface SchoolSummary {
+  schoolId: number;
+  schoolName: string;
+  schoolCode: string;
+  city: string;
+  active: boolean;
+}
+
+export interface CreateSchoolRequest {
+  schoolName: string;
+  schoolCode: string;
+  city: string;
+  adminName: string;
+  adminEmail: string;
+  adminPassword: string;
+}
+
+export interface CreatedSchool extends SchoolSummary {
+  adminCustomId: string;
+  adminEmail: string;
+}
+
+export interface CreateMemberRequest {
+  name: string;
+  email: string;
+  password: string;
+  role: 'TEACHER' | 'STUDENT';
+  phone: string;
+  subject: string;
+  className: string;
+  section: string;
+  parentName: string;
+  parentPhone: string;
+}
+
+export interface CreatedMember {
+  customId: string;
+  role: 'ADMIN' | 'TEACHER' | 'STUDENT';
+  name: string;
+  email: string;
+}
+
+export interface SchoolMember extends CreatedMember {
+  subject: string | null;
+  className: string | null;
+}
+
 export type LeaveType = 'SICK' | 'CASUAL' | 'EARNED' | 'EMERGENCY';
 export type LeaveStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
@@ -109,6 +156,46 @@ export interface LeaveApplication {
 export interface StudentStats  { totalActive: number; }
 export interface TeacherStats  { totalActive: number; }
 export interface FeeStats      { pendingCount: number; }
+
+export interface AdminDashboardData {
+  today: string;
+  academicYear: string;
+  schoolName: string;
+  seatCapacity: number;
+  totalStudents: number;
+  collectedThisMonth: number;
+  collectionGrowthPercent: number;
+  attendancePercent: number;
+  attendancePresent: number;
+  attendanceAbsent: number;
+  enrolledStudents: number;
+  activeStaff: number;
+  staffPresent: number;
+  staffAway: number;
+  pendingDuesAmount: number;
+  pendingDuesCount: number;
+  pendingAdmissions: number;
+  admittedEnquiries: number;
+  interestedAdmissions: number;
+  rejectedAdmissions: number;
+  occupiedSeatsPercent: number;
+  libraryIssuedToday: number;
+  libraryReturnedToday: number;
+  libraryOverdue: number;
+  modules: { id: number; title: string; icon: string | null; category: string | null; route: string | null }[];
+  activities: { sourceId: number; type: string; title: string; detail: string; amount: number | null; occurredAt: string | null }[];
+  classAttendance: { className: string; present: number; absent: number }[];
+  dueStudents: { feeId: number; studentId: number | null; name: string; className: string; amount: number; dueDate: string | null }[];
+  timetable: { id: number; period: number; startTime: string | null; className: string | null; subject: string; teacherName: string }[];
+  events: { title: string; description: string; eventDate: string }[];
+  buses: { vehicleNumber: string; route: string; driverName: string; studentCount: number; status: string }[];
+  feeCollections: { date: string; amount: number }[];
+  announcements: { title: string; body: string; publishedAt: string | null }[];
+  exams: { name: string; className: string | null; startDate: string; status: string }[];
+  birthdays: { personId: number; name: string; detail: string; age: number; role: string }[];
+  staff: { teacherId: number; name: string; title: string; status: string }[];
+  setupSteps: { key: string; label: string; complete: boolean }[];
+}
 
 // ── Service ──────────────────────────────────────────────────────────────────
 
@@ -275,6 +362,10 @@ export class ApiService {
     return this.handle(this.http.get<FeeStats>(`${this.base}/fees/stats`));
   }
 
+  adminDashboard(): Observable<AdminDashboardData> {
+    return this.handle(this.http.get<AdminDashboardData>(`${this.base}/admin/dashboard`));
+  }
+
   addFee(f: Fee): Observable<Fee> {
     return this.handle(this.http.post<Fee>(`${this.base}/fees`, f));
   }
@@ -329,5 +420,25 @@ export class ApiService {
 
   updateMenu(m: Menu): Observable<Menu> {
     return this.handle(this.http.put<Menu>(`${this.base}/menus/${m.id}`, m));
+  }
+
+  schools(): Observable<SchoolSummary[]> {
+    return this.handle(this.http.get<SchoolSummary[]>(`${this.base}/v1/super-admin/schools`));
+  }
+
+  createSchool(request: CreateSchoolRequest): Observable<CreatedSchool> {
+    return this.handle(
+      this.http.post<CreatedSchool>(`${this.base}/v1/super-admin/schools`, request),
+    );
+  }
+
+  schoolMembers(): Observable<SchoolMember[]> {
+    return this.handle(this.http.get<SchoolMember[]>(`${this.base}/v1/admin/members`));
+  }
+
+  createSchoolMember(request: CreateMemberRequest): Observable<CreatedMember> {
+    return this.handle(
+      this.http.post<CreatedMember>(`${this.base}/v1/admin/members`, request),
+    );
   }
 }

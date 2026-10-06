@@ -1,12 +1,15 @@
 package com.eduflow.teacher;
 
+import com.eduflow.tenant.SchoolScopedEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.annotations.Filter;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "teachers")
-public class Teacher {
+@Filter(name = "schoolScope", condition = "school_id = :schoolId")
+public class Teacher extends SchoolScopedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +32,10 @@ public class Teacher {
 
     public Long getId() {
         return id;
+    }
+
+    public String getEmployeeId() {
+        return employeeId;
     }
 
     public String getName() {

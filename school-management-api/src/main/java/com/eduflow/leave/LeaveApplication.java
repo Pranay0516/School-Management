@@ -1,7 +1,9 @@
 package com.eduflow.leave;
 
 import com.eduflow.teacher.Teacher;
+import com.eduflow.tenant.SchoolScopedEntity;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Filter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,7 +13,8 @@ import java.time.LocalDateTime;
         @Index(name = "idx_leave_teacher_dates", columnList = "teacher_id,start_date,end_date"),
         @Index(name = "idx_leave_status_created", columnList = "status,created_at")
 })
-public class LeaveApplication {
+@Filter(name = "schoolScope", condition = "school_id = :schoolId")
+public class LeaveApplication extends SchoolScopedEntity {
 
     public enum LeaveType {
         SICK,

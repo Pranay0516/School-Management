@@ -1,8 +1,7 @@
-package com.eduflow.dashboard;
+`package com.eduflow.dashboard;
 
 import com.eduflow.attendance.Attendance;
 import com.eduflow.attendance.AttendanceRepository;
-import com.eduflow.exam.ExamPaperRepository;
 import com.eduflow.examination.Examination;
 import com.eduflow.examination.ExaminationRepository;
 import com.eduflow.fee.Fee;
@@ -20,14 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -157,6 +153,7 @@ public class AdminDashboardService {
                 .map(fee -> {
                     Student student = studentById.get(fee.studentId);
                     return new AdminDashboardResponse.FeeDueItem(
+                            fee.id,
                             fee.studentId,
                             student == null ? "Unknown student" : student.name,
                             student == null ? "" : classLabel(student),
@@ -186,19 +183,25 @@ public class AdminDashboardService {
                             : record == null ? "Not marked" : record.status == StaffAttendance.Status.PRESENT
                             ? "Present" : "Away";
                     return new AdminDashboardResponse.StaffItem(
+                            teacher.id,
                             teacher.name,
                             teacher.subject == null || teacher.subject.isBlank() ? "Staff" : teacher.subject,
                             status);
                 })
                 .toList();
-        long staffPresent = todayStaffAttendance.stream()
-                .filter(record -> record.status == StaffAttendance.Status.PRESENT)
-                .map(record -> record.teacherId)
-                .distinct().count();
-        long staffAway = todayStaffAttendance.stream()
+        Set<Long> absentTeacherIds = todayStaffAttendance.stream()
                 .filter(record -> record.status == StaffAttendance.Status.ABSENT)
                 .map(record -> record.teacherId)
-                .distinct().count();
+                .collect(Collectors.toSet());
+        Set<Long> presentTeacherIds = todayStaffAttendance.stream()
+                .filter(record -> record.status == StaffAttendance.Status.PRESENT)
+                .map(record -> record.teacherId)
+                .filter(teacherId -> !onLeaveTeacherIds.contains(teacherId))
+                .collect(Collectors.toSet());
+        long staffPresent = presentTeacherIds.size();
+        long staffAway = Stream.concat(absentTeacherIds.stream(), onLeaveTeacherIds.stream())
+                .distinct()
+                .count();
 
         List<AdminDashboardResponse.FeeCollectionDay> collectionDays = new ArrayList<>();
         for (int offset = 14; offset >= 0; offset--) {
@@ -207,7 +210,7 @@ public class AdminDashboardService {
             collectionDays.add(new AdminDashboardResponse.FeeCollectionDay(date, total));
         }
 
-        SchoolProfile profile = profiles.findById(1L).orElse(null);
+        SchoolProfile profile = profiles.findFirstByOrderByIdAsc().orElse(null);
         int seatCapacity = profile == null ? 0 : profile.seatCapacity;
         int occupiedSeatsPercent = seatCapacity == 0 ? 0
                 : (int) Math.min(100, Math.round(activeStudents * 100.0 / seatCapacity));
@@ -217,7 +220,7 @@ public class AdminDashboardService {
                 .filter(menu -> menu.active)
                 .sorted(Comparator.comparing(menu -> menu.displayOrder, Comparator.nullsLast(Comparator.naturalOrder())))
                 .map(menu -> new AdminDashboardResponse.ModuleItem(
-                        menu.title, menu.icon, menu.category, menu.route))
+                        menu.id, menu.title, menu.icon, menu.category, menu.route))
                 .toList();
 
         List<AdminDashboardResponse.EventItem> upcomingEvents = events.findAll().stream()
@@ -238,10 +241,10 @@ public class AdminDashboardService {
         List<AdminDashboardResponse.BirthdayItem> birthdays = Stream.concat(
                         allStudents.stream()
                                 .filter(student -> isBirthdayToday(student.dateOfBirth, today))
-                                .map(student -> birthday(student.name, classLabel(student), student.dateOfBirth, "Student", today)),
+                                .map(student -> birthday(student.id, student.name, classLabel(student), student.dateOfBirth, "Student", today)),
                         allTeachers.stream()
                                 .filter(teacher -> isBirthdayToday(teacher.dateOfBirth, today))
-                                .map(teacher -> birthday(teacher.name, "Staff", teacher.dateOfBirth, "Staff", today)))
+                                .map(teacher -> birthday(teacher.id, teacher.name, "Staff", teacher.dateOfBirth, "Staff", today)))
                 .toList();
 
         List<LibraryLoan> loans = libraryLoans.findAll();
@@ -263,6 +266,7 @@ public class AdminDashboardService {
                 activeStudents,
                 collectedThisMonth,
                 growth,
+                academicYear(today),
                 attendancePercent,
                 presentStudents,
                 absentStudents,
@@ -288,7 +292,7 @@ public class AdminDashboardService {
                         .filter(entry -> entry.dayOfWeek == today.getDayOfWeek().getValue())
                         .sorted(Comparator.comparing(entry -> entry.startTime, Comparator.nullsLast(Comparator.naturalOrder())))
                         .map(entry -> new AdminDashboardResponse.TimetableItem(
-                                entry.period, entry.startTime, entry.subject, entry.teacherName))
+                                entry.id, entry.period, entry.startTime, entry.className, entry.subject, entry.teacherName))
                         .toList(),
                 upcomingEvents,
                 vehicles.findAll().stream()
@@ -323,17 +327,21 @@ public class AdminDashboardService {
                 .map(fee -> {
                     Student student = studentById.get(fee.studentId);
                     return new AdminDashboardResponse.ActivityItem(
+                            fee.id,
                             "FEE",
-                            (student == null ? "Student" : student.name) + " paid " + money(fee.amount),
+                            (student == null ? "Student" : student.name) + " paid a fee",
                             fee.feeType == null ? "Fee payment" : fee.feeType,
+                            money(fee.amount),
                             fee.paymentDate.atStartOfDay());
                 })
                 .toList();
         List<AdminDashboardResponse.ActivityItem> leaveActivities = leaves.findAllByOrderByCreatedAtDesc().stream()
                 .map(leave -> new AdminDashboardResponse.ActivityItem(
+                        leave.getId(),
                         "LEAVE",
                         leave.getTeacher().getName() + " submitted " + leave.getType().name().toLowerCase() + " leave",
                         leave.getStartDate() + " to " + leave.getEndDate() + " · " + leave.getStatus().name(),
+                        null,
                         leave.getCreatedAt()))
                 .toList();
         return Stream.concat(feeActivities.stream(), leaveActivities.stream())
@@ -353,9 +361,14 @@ public class AdminDashboardService {
     }
 
     private static AdminDashboardResponse.BirthdayItem birthday(
-            String name, String detail, LocalDate dateOfBirth, String role, LocalDate today) {
+            Long personId, String name, String detail, LocalDate dateOfBirth, String role, LocalDate today) {
         int age = dateOfBirth == null ? 0 : today.getYear() - dateOfBirth.getYear();
-        return new AdminDashboardResponse.BirthdayItem(name, detail, age, role);
+        return new AdminDashboardResponse.BirthdayItem(personId, name, detail, age, role);
+    }
+
+    private static String academicYear(LocalDate today) {
+        int startYear = today.getMonthValue() >= 4 ? today.getYear() : today.getYear() - 1;
+        return startYear + "-" + String.format("%02d", (startYear + 1) % 100);
     }
 
     private static boolean isBirthdayToday(LocalDate birthDate, LocalDate today) {

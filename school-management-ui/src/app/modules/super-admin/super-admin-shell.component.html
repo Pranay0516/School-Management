@@ -40,12 +40,7 @@
         </header>
 
         <section class="sa-content">
-          @if (page() === 'Dashboard')     { <app-super-admin-dashboard /> }
-          @if (page() === 'Schools')       { <app-schools /> }
-          @if (page() === 'Subscriptions') { <app-subscriptions /> }
-          @if (page() === 'Global Users')  { <app-global-users /> }
-          @if (page() === 'Announcements') { <app-announcements /> }
-          @if (page() === 'Dashboard Access') { <app-dashboard-access /> }
+          <app-schools />
         </section>
       </div>
     </div>

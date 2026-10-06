@@ -4,9 +4,25 @@ import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import { App } from './app';
-import { AuthService, AuthUser } from './core/auth.service';
+import { AccountRole, AuthService, AuthUser } from './core/auth.service';
 
 describe('App', () => {
+  function user(role: AccountRole, id: number, customId: string, teacherName: string | null = null): AuthUser {
+    return {
+      userId: id,
+      id,
+      username: customId,
+      customId,
+      role,
+      schoolId: role === 'SUPER_ADMIN' ? null : 1,
+      schoolName: role === 'SUPER_ADMIN' ? null : 'Example School',
+      teacherId: teacherName ? id : null,
+      teacherName,
+      accessToken: 'test-token',
+      expiresIn: 1800,
+    };
+  }
+
   async function createApp(auth: Pick<AuthService, 'currentUser' | 'restoreSession' | 'signIn' | 'signOut'>) {
     await TestBed.configureTestingModule({
       imports: [App],
@@ -26,9 +42,7 @@ describe('App', () => {
     const fixture = await createApp({
       currentUser: signal<AuthUser | null>(null),
       restoreSession: () => of(null),
-      signIn: () => of({
-        id: 1, username: 'user@school.local', role: 'ADMIN', teacherId: null, teacherName: null,
-      }),
+      signIn: () => of(user('ADMIN', 1, 'SCH01-ADM-0001')),
       signOut: () => of(void 0),
     });
     expect(fixture.componentInstance).toBeTruthy();
@@ -38,9 +52,7 @@ describe('App', () => {
     const fixture = await createApp({
       currentUser: signal<AuthUser | null>(null),
       restoreSession: () => of(null),
-      signIn: () => of({
-        id: 1, username: 'admin@school.local', role: 'ADMIN', teacherId: null, teacherName: null,
-      }),
+      signIn: () => of(user('ADMIN', 1, 'SCH01-ADM-0001')),
       signOut: () => of(void 0),
     });
     const app = fixture.componentInstance;
@@ -56,9 +68,7 @@ describe('App', () => {
     const fixture = await createApp({
       currentUser: signal<AuthUser | null>(null),
       restoreSession: () => of(null),
-      signIn: () => of({
-        id: 1, username: 'admin@school.local', role: 'ADMIN', teacherId: null, teacherName: null,
-      }),
+      signIn: () => of(user('ADMIN', 1, 'SCH01-ADM-0001')),
       signOut: () => of(void 0),
     });
     const app = fixture.componentInstance;
@@ -72,9 +82,7 @@ describe('App', () => {
     const fixture = await createApp({
       currentUser: signal<AuthUser | null>(null),
       restoreSession: () => of(null),
-      signIn: () => of({
-        id: 2, username: 'teacher@school.local', role: 'TEACHER', teacherId: 1, teacherName: 'Demo Teacher',
-      }),
+      signIn: () => of(user('TEACHER', 2, 'SCH01-TCH-1001', 'Demo Teacher')),
       signOut: () => of(void 0),
     });
     const app = fixture.componentInstance;
@@ -88,12 +96,8 @@ describe('App', () => {
   it('restores an existing teacher session to the teacher dashboard', async () => {
     const fixture = await createApp({
       currentUser: signal<AuthUser | null>(null),
-      restoreSession: () => of({
-        id: 2, username: 'teacher@school.local', role: 'TEACHER', teacherId: 1, teacherName: 'Demo Teacher',
-      }),
-      signIn: () => of({
-        id: 1, username: 'admin@school.local', role: 'ADMIN', teacherId: null, teacherName: null,
-      }),
+      restoreSession: () => of(user('TEACHER', 2, 'SCH01-TCH-1001', 'Demo Teacher')),
+      signIn: () => of(user('ADMIN', 1, 'SCH01-ADM-0001')),
       signOut: () => of(void 0),
     });
 
